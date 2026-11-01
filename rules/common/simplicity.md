@@ -59,6 +59,6 @@ small diff shipped without tracing the flow is a confident wrong fix.
 ## Output
 
 Lead with the change. Follow it with at most three short lines: what was skipped and
-when to add it (`skipped: X, add when Y`). The certainty label from CLAUDE.md is part of
+when to add it (`skipped: X, add when Y`). The certainty label from working-with-me.md is part of
 those lines, never cut. Explanation the user asked for (a report, a walkthrough) is given
 in full.

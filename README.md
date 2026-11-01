@@ -59,6 +59,7 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 
 | 룰 | 한마디로 |
 |---|---|
+| [`working-with-me.md`](rules/common/working-with-me.md) | **내가 일하는 방식.** 품질 먼저, 비용은 그다음. 확신도를 확인됨/추정/모름으로 밝힘. 확인 안 된 근거로 되돌릴 수 없는 작업은 하지 않음 |
 | [`simplicity.md`](rules/common/simplicity.md) | **최소한으로 만들기.** 꼭 필요한가 → 이미 있나 → 기본 기능으로 되나 → 한 줄로 되나, 순서로 따져 봄. 버그는 증상 말고 원인을 고침. 요청과 상관없는 코드는 건드리지 않음 |
 | [`coding-style.md`](rules/common/coding-style.md) | 데이터를 직접 고치지 말고 새로 만들기(불변성), 에러 처리·입력 검증, 이름 짓기, 파일은 800줄까지, 리뷰 심각도 4단계 |
 | [`development-workflow.md`](rules/common/development-workflow.md) | 새로 짜기 전에 남이 만든 것부터 찾기 → 계획 → 테스트(맞을 때만) → 검증 |
