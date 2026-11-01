@@ -19,6 +19,15 @@
 
 1. **Plan First** for anything non-trivial — restate requirements, identify
    dependencies and risks, break into phases before touching code.
+   - **Intent first**: if the change is noticeable to users or other systems and
+     touches 3+ files, write `intent.md` before planning: Problem / Outcome +
+     success criteria / affected scope and what stays unchanged / constraints /
+     open questions. No how. Ask the user instead of guessing open questions.
+   - Skip for typos, version bumps, behavior-preserving refactors, and spikes
+     (write it once the direction is clear).
+   - Location: the project's existing convention, else
+     `~/.local/share/intent/<repo>/YYYY-MM-DD-<topic>.md` (outside the repo; never commit).
+   - Judge "done" against the Outcome, not against the plan.
 
 2. **TDD where it fits** — write the test first (RED), implement to pass it (GREEN),
    refactor (IMPROVE). See [testing.md](testing.md) for test scope. Not every
