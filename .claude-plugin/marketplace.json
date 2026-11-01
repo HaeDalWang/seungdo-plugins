@@ -1,18 +1,18 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "seungdo-skills",
-  "description": "실무에서 반복해서 쓴 것만 올리는 스킬 마켓플레이스.",
+  "name": "seungdo-plugins",
+  "description": "실무에서 반복해서 쓴 것만 올리는 플러그인 마켓플레이스.",
   "owner": {
     "name": "Seungdo Bae",
     "url": "https://github.com/HaeDalWang"
   },
   "plugins": [
     {
-      "name": "seungdo-skills",
+      "name": "seungdo",
       "source": ".",
-      "description": "답변의 근거를 강제하는 seonbi, 고객 메신저 회신을 쓰는 katalk, 계획 전에 빠진 결정을 질문으로 꺼내는 grilling. 에이전트 leak-scan·shell-diagnose 포함.",
+      "description": "답변의 근거를 강제하는 seonbi, 고객 메신저 회신을 쓰는 katalk, 계획 전에 빠진 결정을 질문으로 꺼내는 grilling, 완료를 증명하는 verification-loop, gh CLI 운영 github-ops. 에이전트 leak-scan·shell-diagnose 포함.",
       "category": "productivity",
-      "homepage": "https://github.com/HaeDalWang/seungdo-skills",
+      "homepage": "https://github.com/HaeDalWang/seungdo-plugins",
       "license": "PolyForm-Noncommercial-1.0.0"
     },
     {
@@ -29,14 +29,6 @@
       "description": "Kubernetes 버전 업그레이드를 phase-gated 방식으로 수행한다. Helm 차트 호환성 사전 점검(helm-k8s-compat) 포함.",
       "category": "devops",
       "homepage": "https://github.com/HaeDalWang/k8s-upgrade-skills"
-    },
-    {
-      "name": "seungdo-devops",
-      "source": "./plugins/seungdo-devops",
-      "description": "변경 후 완료를 증명하는 verification-loop, gh CLI 운영과 untrusted 콘텐츠 방어를 다루는 github-ops. ECC(MIT)에서 가져와 수정.",
-      "category": "devops",
-      "homepage": "https://github.com/HaeDalWang/seungdo-skills",
-      "license": "MIT"
     }
   ]
 }

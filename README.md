@@ -1,4 +1,4 @@
-# seungdo-skills
+# seungdo-plugins
 
 AI 코딩 도우미(Claude Code)에게 **"일 잘하는 습관"을 심어 주는 설정 모음**입니다.
 
@@ -32,14 +32,9 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 | [`seonbi`](skills/seonbi/SKILL.md) | 깐깐한 선생님처럼 **"그거 확인한 거야, 기억한 거야?"** 를 구분시킴 | 사실·기술·버전 질문, `확실해?`, `근거`, `출처`, 장애 대응 |
 | [`katalk`](skills/katalk/SKILL.md) | 고객에게 보낼 메신저 답장을 내 말투로 쓰거나, 내가 쓴 초안을 검토 | `카톡`, `뭐라고 보내`, `회신`, `너라면 뭐라고 적을래` |
 | [`grilling`](skills/grilling/SKILL.md) | 계획을 짜기 전에 **빠진 결정을 질문으로 다 꺼냄.** 질문마다 추천 답을 붙여서 "네"만 해도 넘어감 | `질문해줘`, `빠진 거 물어봐`, `따져봐`, SOW·마이그레이션처럼 범위가 모호할 때 |
+| [`verification-loop`](skills/verification-loop/SKILL.md) | "다 됐어요" 말하기 전에 프로젝트의 빌드·타입·린트·테스트를 **실제로 돌려서** 증거를 보여 줌 | 기능 완성, PR 직전, 리팩터링 후 |
+| [`github-ops`](skills/github-ops/SKILL.md) | `gh` 명령으로 이슈·PR·CI를 관리. 남이 쓴 PR 내용은 **믿지 않고** 다룸 | `이슈 정리`, `PR 확인`, `CI 깨졌다`, 릴리스 |
 | [`k8s-upgrade-skills`](https://github.com/HaeDalWang/k8s-upgrade-skills) ↗ | Kubernetes 버전 업그레이드를 **단계마다 검문을 통과해야 다음으로** 가는 방식으로 진행 | `EKS 업그레이드`, `K8s 버전 업그레이드` |
-
-`seungdo-devops` 플러그인 (따로 설치):
-
-| 스킬 | 하는 일 | 이럴 때 켜져요 |
-|---|---|---|
-| [`verification-loop`](plugins/seungdo-devops/skills/verification-loop/SKILL.md) | "다 됐어요" 말하기 전에 프로젝트의 빌드·타입·린트·테스트를 **실제로 돌려서** 증거를 보여 줌 | 기능 완성, PR 직전, 리팩터링 후 |
-| [`github-ops`](plugins/seungdo-devops/skills/github-ops/SKILL.md) | `gh` 명령으로 이슈·PR·CI를 관리. 남이 쓴 PR 내용은 **믿지 않고** 다룸 | `이슈 정리`, `PR 확인`, `CI 깨졌다`, 릴리스 |
 
 > `k8s-upgrade-skills`는 덩치가 커서 [별도 저장소](https://github.com/HaeDalWang/k8s-upgrade-skills)에 있어요.
 > 파일은 여기 없지만 **같은 앱스토어(마켓플레이스)에서 설치**됩니다.
@@ -82,32 +77,29 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 Claude Code에서:
 
 ```
-/plugin marketplace add HaeDalWang/seungdo-skills
-/plugin install seungdo-skills@seungdo-skills
+/plugin marketplace add HaeDalWang/seungdo-plugins
+/plugin install seungdo@seungdo-plugins
 ```
 
 Kubernetes 업그레이드 스킬도 쓰려면 (별도 저장소에서 자동으로 받아와요):
 
 ```
-/plugin install k8s-upgrade-skills@seungdo-skills
+/plugin install k8s-upgrade-skills@seungdo-plugins
 ```
 
-검증·GitHub 관리 스킬도 쓰려면:
+설치 확인은 `/plugin list`, 업데이트는 `/plugin update seungdo`.
 
-```
-/plugin install seungdo-devops@seungdo-skills
-```
-
-설치 확인은 `/plugin list`, 업데이트는 `/plugin update seungdo-skills`.
+> 예전 이름(`seungdo-skills` 마켓플레이스, `seungdo-skills`·`seungdo-devops` 플러그인)으로 설치했다면
+> 지우고 위 명령으로 다시 설치하세요. `seungdo-devops`의 스킬 두 개는 `seungdo`에 합쳐졌어요.
 
 ### 직접 복사해서 설치
 
 플러그인을 안 쓰거나, Claude Code 말고 다른 AI 도구에 넣을 때:
 
 ```bash
-git clone https://github.com/HaeDalWang/seungdo-skills.git
-cd seungdo-skills
-cp -R skills/seonbi skills/katalk skills/grilling ~/.claude/skills/
+git clone https://github.com/HaeDalWang/seungdo-plugins.git
+cd seungdo-plugins
+cp -R skills/* ~/.claude/skills/
 ```
 
 `k8s-upgrade-skills`는 그 저장소의 `install.sh`를 쓰세요.
@@ -120,15 +112,15 @@ cp -R skills/seonbi skills/katalk skills/grilling ~/.claude/skills/
 복사만 하면 끝이에요. `~/.claude/rules/` 아래에 있는 `.md` 파일은 하위 폴더까지 자동으로 읽힙니다.
 
 ```bash
-git clone https://github.com/HaeDalWang/seungdo-skills.git
-cp -R seungdo-skills/rules/common ~/.claude/rules/
+git clone https://github.com/HaeDalWang/seungdo-plugins.git
+cp -R seungdo-plugins/rules/common ~/.claude/rules/
 ```
 
 몇 개만 고르려면:
 
 ```bash
 mkdir -p ~/.claude/rules/common
-cp seungdo-skills/rules/common/{security,testing}.md ~/.claude/rules/common/
+cp seungdo-plugins/rules/common/{security,testing}.md ~/.claude/rules/common/
 ```
 
 - 한 프로젝트에만 쓰고 싶으면 → 그 프로젝트의 `.claude/rules/`에 넣기
@@ -162,7 +154,7 @@ paths:
 | `rules/common/simplicity.md` | [ponytail](https://github.com/DietrichGebert/ponytail) 플러그인 | 핵심 규칙을 가져와 다듬음 (MIT) | 같은 규칙이 매번 두 번 들어감. ponytail을 쓸 거면 `simplicity.md`만 빼고 복사 |
 | `seonbi`의 진단 순서 (증상 확인·가설 순위·고친 뒤 재확인) | [mattpocock/skills](https://github.com/mattpocock/skills)의 `diagnosing-bugs` | 아이디어만 얻음, 문장은 새로 씀 | "디버그해 줘"에 진단 방법 두 개가 같이 켜짐. 하나만 쓰세요 |
 | `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills)의 `grilling` | 가져와 수정 (MIT). 바꾼 내용은 [`NOTICE.md`](skills/grilling/NOTICE.md) | 같은 이름 스킬이 두 개 생김 |
-| `seungdo-devops`의 `verification-loop`, `github-ops` | [ECC](https://github.com/affaan-m/ECC) | 가져와 수정 (MIT) | 같은 이름 스킬이 두 개 생김 |
+| `verification-loop`, `github-ops` | [ECC](https://github.com/affaan-m/ECC) | 가져와 수정 (MIT) | 같은 이름 스킬이 두 개 생김 |
 
 `mattpocock/skills`의 나머지(`tdd`, `to-spec` 등)는 여기 없어서 겹치지 않아요.
 
@@ -358,7 +350,7 @@ ECC 스킬은 5주 동안 한 번도 안 쓰였거든요. 그래도 이 둘을 �
 | `knowledge-ops` | 설치 안 된 메모리 서버가 있어야 동작 |
 
 **겹치는 게 많아지면 엉망이 돼서** 이렇게 걸렀어요.
-원본 저작권: Copyright (c) 2026 Affaan Mustafa (MIT). 바꾼 내용은 [`NOTICE.md`](plugins/seungdo-devops/NOTICE.md)에 있어요.
+원본 저작권: Copyright (c) 2026 Affaan Mustafa (MIT). 바꾼 내용은 각 스킬 폴더의 `NOTICE.md`([`verification-loop`](skills/verification-loop/NOTICE.md), [`github-ops`](skills/github-ops/NOTICE.md))에 있어요.
 
 ---
 
@@ -388,14 +380,16 @@ ECC 스킬은 5주 동안 한 번도 안 쓰였거든요. 그래도 이 둘을 �
 ## 저장소 구조
 
 ```
-seungdo-skills/
+seungdo-plugins/
 ├── .claude-plugin/
 │   ├── plugin.json        # 이 저장소 = 플러그인 하나
 │   └── marketplace.json   # 앱스토어 목록 — 다른 저장소 스킬도 여기 등록
-├── skills/                # seungdo-skills 플러그인의 스킬
+├── skills/                # seungdo 플러그인의 스킬
 │   ├── seonbi/SKILL.md
 │   ├── katalk/SKILL.md
-│   └── grilling/          # SKILL.md + NOTICE.md (mattpocock/skills, MIT)
+│   ├── grilling/          # SKILL.md + NOTICE.md (mattpocock/skills, MIT)
+│   ├── verification-loop/ # SKILL.md + NOTICE.md (ECC, MIT)
+│   └── github-ops/        # SKILL.md + NOTICE.md (ECC, MIT)
 ├── agents/                # 플러그인이 자동으로 읽는 에이전트
 │   ├── leak-scan.md
 │   └── shell-diagnose.md
@@ -408,18 +402,8 @@ seungdo-skills/
 │       ├── git-workflow.md
 │       ├── security.md
 │       └── testing.md
-├── plugins/
-│   └── seungdo-devops/    # 같은 저장소 안의 두 번째 플러그인
-│       ├── .claude-plugin/plugin.json
-│       ├── LICENSE        # MIT (원본 ECC)
-│       ├── NOTICE.md      # 출처·바꾼 내용·가져온 이유
-│       └── skills/
-│           ├── verification-loop/SKILL.md
-│           └── github-ops/SKILL.md
 └── README.md
 ```
-
-플러그인마다 읽는 폴더가 하나씩 정해져 있어요. `seungdo-skills`는 `skills/`만, `seungdo-devops`는 `plugins/seungdo-devops/skills/`만 읽어서 같은 스킬이 두 번 들어가지 않아요.
 
 설정 파일(매니페스트)을 고쳤다면 커밋 전에:
 
@@ -437,5 +421,5 @@ claude plugin validate agents --strict
 
 예외로 MIT인 것들 (원본 라이선스를 따름):
 
-- `plugins/seungdo-devops/` — [ECC](https://github.com/affaan-m/ECC)에서 가져옴. 고지: [`plugins/seungdo-devops/NOTICE.md`](plugins/seungdo-devops/NOTICE.md)
+- `skills/verification-loop/`, `skills/github-ops/` — [ECC](https://github.com/affaan-m/ECC)에서 가져옴. 고지: 각 폴더의 `NOTICE.md`
 - `rules/common/simplicity.md` — [ponytail](https://github.com/DietrichGebert/ponytail)에서 가져옴. 고지: [`rules/NOTICE.md`](rules/NOTICE.md)
