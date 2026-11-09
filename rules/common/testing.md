@@ -1,3 +1,9 @@
+---
+inclusion: always  # Kiro steering reads this; Claude Code ignores it
+paths:
+  - "**/*.{py,js,jsx,ts,tsx,mjs,cjs,go,rs,java,kt,rb,php,cs,swift}"
+  - "**/*.{sh,bash,zsh,sql}"
+---
 # Testing
 
 Non-trivial logic (a branch, a loop, a parser, a money/security path) leaves ONE

@@ -50,7 +50,9 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 
 ### 룰
 
-`~/.claude/rules/`에 넣어 두면 **모든 프로젝트에서 항상** 적용됩니다.
+`~/.claude/rules/`에 넣어 두면 모든 프로젝트에 적용됩니다. `coding-style`·`testing`·`security`는
+코드 파일(`security`는 IaC·YAML·`.env`도)을 열 때만 켜지고, 나머지는 항상 켜져 있어요.
+Kiro steering으로 쓰면 셋 다 항상 켜져요(`inclusion: always`).
 
 | 룰 | 한마디로 |
 |---|---|

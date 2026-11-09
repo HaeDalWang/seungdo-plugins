@@ -1,3 +1,13 @@
+---
+inclusion: always  # Kiro steering reads this; Claude Code ignores it
+paths:
+  - "**/*.{py,js,jsx,ts,tsx,mjs,cjs,go,rs,java,kt,rb,php,cs,swift}"
+  - "**/*.{sh,bash,zsh,sql}"
+  - "**/*.{tf,tfvars,hcl,yaml,yml}"
+  - "**/Dockerfile"
+  - "**/.env*"
+  - ".github/**/*"
+---
 # Security Guidelines
 
 ## Mandatory Security Checks

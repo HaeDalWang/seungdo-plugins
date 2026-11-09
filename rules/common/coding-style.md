@@ -1,3 +1,9 @@
+---
+inclusion: always  # Kiro steering reads this; Claude Code ignores it
+paths:
+  - "**/*.{py,js,jsx,ts,tsx,mjs,cjs,go,rs,java,kt,rb,php,cs,swift}"
+  - "**/*.{sh,bash,zsh,sql}"
+---
 # Coding Style
 
 Simplicity, YAGNI, reuse, and file count live in [simplicity.md](simplicity.md).
