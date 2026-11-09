@@ -1,21 +1,14 @@
 # Development Workflow
 
-> This file extends [common/git-workflow.md](./git-workflow.md) with the process that
-> happens before git operations.
-
 ## Feature Implementation Workflow
 
 0. **Research & Reuse** _(before any new implementation)_
-   - **GitHub code search first:** `gh search repos` / `gh search code` for existing
-     implementations, templates, and patterns before writing anything new.
-   - **Library docs second:** use the `context7` MCP or primary vendor docs to confirm
-     API behavior, package usage, and version-specific details before implementing.
-   - **Exa when the first two are insufficient:** the `exa` MCP for broader web
-     research or discovery.
-   - **Check package registries:** npm, PyPI, crates.io, etc. before writing utility
-     code. Prefer battle-tested libraries over hand-rolled solutions.
-   - Prefer adopting or porting a proven approach over writing net-new code when it
-     meets the requirement.
+   - Climb the simplicity.md ladder first: this repo, stdlib, platform feature,
+     installed dependency. Add a new dependency only when a few lines cannot do the job.
+   - Nothing on the ladder fits → `gh search code` for a proven implementation to port,
+     then package registries, then the `exa` MCP for broader web research.
+   - Before using any library API, confirm behavior and version details with the
+     `context7` MCP or the vendor docs.
 
 1. **Plan First** for anything non-trivial — restate requirements, identify
    dependencies and risks, break into phases before touching code.
@@ -35,11 +28,11 @@
 
 3. **Verify before claiming done** — run the actual build/type/lint/test commands and
    look at their output. For a non-trivial code change, use the
-   `seungdo:verification-loop` skill. Don't claim fixed without rerunning the
-   proving command.
+   `seungdo:verification-loop` skill. After a Kiro run, the one gate check in
+   kiro-delegation.md is that rerun; otherwise rerun the proving command before
+   claiming fixed.
 
-4. **Commit & Push** — see [git-workflow.md](./git-workflow.md) for message format and
-   PR process.
+4. **Commit & Push** — per git-workflow.md.
 
 5. **Pre-push checks** — CI passing, merge conflicts resolved, branch up to date with
    target before opening or requesting review on a PR.

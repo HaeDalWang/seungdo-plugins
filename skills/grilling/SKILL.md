@@ -1,6 +1,6 @@
 ---
 name: grilling
-description: Interview the user in rounds until a plan has no silent assumptions — a design tree of decisions, each round asking every question answerable now, each with a recommended answer. Use when the user asks to be grilled or questioned about a plan, says 질문해줘 / 빠진 거 물어봐 / 따져봐 / 그릴, or when scoping work whose requirements are still vague (a SOW, a migration, an upgrade plan) before writing anything.
+description: Interview the user in rounds until a plan has no silent assumptions — a design tree of decisions, each round asking every question answerable now, each with a recommended answer. Use when the user asks to be grilled or questioned about a plan, says 질문해줘 / 빠진 거 물어봐 / 따져봐 / 그릴, or when scoping work whose requirements are still vague (a SOW, a migration, an upgrade plan) before writing anything. Not for auditing a design that is already written.
 license: MIT
 metadata:
   origin: mattpocock/skills
@@ -39,8 +39,8 @@ recommended answer, then wait for the answers.
 ## Facts vs decisions
 
 Facts are your job: anything the environment can answer (repo, config, running system,
-docs) you look up yourself with your tools before asking. Use a subagent only for a wide
-sweep, and keep asking the rest of the frontier while it runs — only the questions
+docs) you look up yourself with your tools before asking. Hand only a wide sweep to a background worker (your environment's default
+worker, else a subagent), and keep asking the rest of the frontier while it runs — only the questions
 downstream of it wait.
 
 Decisions are the user's: put each one to them and wait.

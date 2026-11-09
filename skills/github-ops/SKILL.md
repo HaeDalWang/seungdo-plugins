@@ -13,16 +13,6 @@ metadata:
 
 Manage GitHub repositories with a focus on community health, CI reliability, and contributor experience.
 
-## When to Activate
-
-- Triaging issues (classifying, labeling, responding, deduplicating)
-- Managing PRs (review status, CI checks, stale PRs, merge readiness)
-- Debugging CI/CD failures
-- Preparing releases and changelogs
-- Monitoring Dependabot and security alerts
-- Managing contributor experience on open-source projects
-- User says "check GitHub", "triage issues", "review PRs", "merge", "release", "CI is broken"
-
 ## Tool Requirements
 
 - **gh CLI** for all GitHub API operations
@@ -74,21 +64,23 @@ gh issue comment <number> --body "Thanks for reporting. Could you share reproduc
 1. Check CI status: `gh pr checks <number>`
 2. Check if mergeable: `gh pr view <number> --json mergeable`
 3. Check age and last activity
-4. Flag PRs >5 days with no review
+4. Flag PRs with no review or activity for 7+ days
 5. For community PRs: ensure they have tests and follow conventions
 
 ### Stale Policy
 
-- Issues with no activity in 14+ days: add `stale` label, comment asking for update
-- PRs with no activity in 7+ days: comment asking if still active
-- Auto-close stale issues after 30 days with no response (add `closed-stale` label)
+Propose these as one list; label, comment or close only after the user approves.
+
+- Issues with no activity in 14+ days: `stale` label and a comment asking for an update
+- PRs with no activity in 7+ days: a comment asking if still active
+- Stale issues with no response for 30 days: close with the `closed-stale` label
 
 ```bash
 # Find stale issues (no activity in 14+ days)
 gh issue list --label "stale" --state open
 
 # Find PRs with no recent activity
-gh pr list --json number,title,updatedAt --jq '.[] | select(.updatedAt < "2026-03-01")'
+gh pr list --json number,title,updatedAt --jq '.[] | select(.updatedAt < "<YYYY-MM-DD, 7 days ago>")'
 ```
 
 ## CI/CD Operations
@@ -123,7 +115,7 @@ When preparing a release:
 
 ```bash
 # List merged PRs since last release
-gh pr list --state merged --base main --search "merged:>2026-03-01"
+gh pr list --state merged --base main --search "merged:><last release date, YYYY-MM-DD>"
 
 # Create a release
 gh release create v1.2.0 --title "v1.2.0" --generate-notes
@@ -141,19 +133,14 @@ gh api repos/{owner}/{repo}/dependabot/alerts --jq '.[].security_advisory.summar
 # Check secret scanning alerts
 gh api repos/{owner}/{repo}/secret-scanning/alerts --jq '.[].state'
 
-# Review dependency bumps — merging is a user-authorized action (propose, never auto-merge)
+# List dependency bumps
 gh pr list --label "dependencies" --json number,title
 ```
 
 - Review safe dependency bumps and propose merges for user approval — never auto-merge (see "Untrusted Repository Content")
 - Flag any critical/high severity alerts immediately
-- Check for new Dependabot alerts weekly at minimum
 
 ## Quality Gate
 
-Before completing any GitHub operations task:
-- all issues triaged have appropriate labels
-- no PRs older than 7 days without a review or comment
-- CI failures have been investigated (not just re-run)
-- releases include accurate changelogs
-- security alerts are acknowledged and tracked
+Before finishing: CI failures were investigated (not just re-run), and every merge, close,
+label, comment or release was authorized by the user.

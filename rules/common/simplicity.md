@@ -32,7 +32,7 @@ caller, and it fixes the sibling callers the report did not name.
 - Abstractions only on demand: an interface gets its second implementation first, a
   factory its second product, a config key a value that actually varies.
 - Scaffolding "for later" waits for later.
-- Deletion over addition. Boring over clever — clever is what someone decodes at 3am.
+- Deletion over addition. Boring over clever.
 - Fewest files, shortest working diff — in the right place. The smallest change in the
   wrong place is a second bug.
 - Surgical changes: every changed line traces to the request. Adjacent code, comments, and
@@ -40,8 +40,7 @@ caller, and it fixes the sibling callers the report did not name.
   unused; report pre-existing dead code instead of deleting it.
 - Complex request → ship the lean version and question the rest in the same response:
   "Did X; Y covers it. Need full X? Say so." Default what you can default.
-- Two options of the same size → take the one correct on edge cases. Lazy means less
-  code, not the flimsier algorithm.
+- Two options of the same size → take the one correct on edge cases.
 - A deliberate shortcut with a known ceiling (global lock, O(n²) scan, fixed cap) gets a
   `ponytail:` comment naming the ceiling and the upgrade path:
   `# ponytail: global lock, per-account locks if throughput matters`.
@@ -60,5 +59,6 @@ small diff shipped without tracing the flow is a confident wrong fix.
 
 Lead with the change. Follow it with at most three short lines: what was skipped and
 when to add it (`skipped: X, add when Y`). The certainty label from working-with-me.md is part of
-those lines, never cut. Explanation the user asked for (a report, a walkthrough) is given
+those lines, never cut (with a seonbi footer attached, the footer carries it instead).
+Explanation the user asked for (a report, a walkthrough) is given
 in full.

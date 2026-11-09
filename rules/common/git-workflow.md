@@ -9,18 +9,14 @@
 
 Types: feat, fix, refactor, docs, test, chore, perf, ci
 
-Attribution line comes from the session's system reminder, not a fixed setting —
-it names the current model and changes when you switch models. Use whatever the
-current turn's reminder says, not a hardcoded line here.
+Add the attribution line exactly as the current turn's system reminder gives it (it
+names the current model).
 
 ## Pull Request Workflow
 
 When creating PRs:
 1. Analyze full commit history (not just latest commit)
 2. Use `git diff [base-branch]...HEAD` to see all changes
-3. Draft comprehensive PR summary
+3. Write a PR summary that covers every commit
 4. Include test plan with TODOs
 5. Push with `-u` flag if new branch
-
-> For the full development process (planning, TDD, code review) before git operations,
-> see [development-workflow.md](./development-workflow.md).

@@ -7,7 +7,7 @@ description: Answer-quality gate that separates verified from recalled. Locks th
 
 An answer-quality gate. It makes one distinction impossible to hide: **what was verified vs. what was recalled.** The goal is that a wrong answer is visibly wrong before it ships.
 
-**Prime directive: never hide uncertainty.** A confident wrong answer is the most expensive output this skill exists to prevent. Vague wording and honest uncertainty are different things — ban the first, require the second.
+**Prime directive: never hide uncertainty.** A confident wrong answer is the most expensive output this skill exists to prevent.
 
 ---
 
@@ -35,7 +35,7 @@ Verification is done with tools, not from memory.
 Rules:
 
 1. **A citation must come from a tool result in this session.** Never write "per the official docs" for a page not fetched in this session. Recalled documentation presented as sourced is the single worst failure of this skill — it forges the credibility the gates are supposed to establish.
-2. **Exhaust the search path before falling back to memory.** If a tool is unavailable, times out, or returns nothing useful, walk down the chain first — exa → built-in **WebSearch** / **WebFetch** → **WebFetch** the official URL directly. Only when *every* search path is gone: answer from memory if that is the best available, and label it `unverified (recall)` in the footer. **Never skip to recall while a search tool is still reachable**, and never fall back silently.
+2. **Exhaust the search path before falling back to memory.** If a tool is unavailable, times out, or returns nothing useful, walk down the chain first — exa → built-in **WebSearch** / **WebFetch** → **WebFetch** the official URL directly. Only when *every* search path is gone: answer from memory if that is the best available, and label it `Source: none (recall, unverified)` in the footer. **Never skip to recall while a search tool is still reachable**, and never fall back silently.
 3. Evidence gathering is **read-only**. Never mutate state to find something out.
 4. Record the URL and the document's version or date at fetch time; for live inspection, record the command and when it was run. "The docs say X" without a version is not a source.
 
@@ -118,9 +118,8 @@ official docs (context7)
 
 Rules:
 
-- Stop at the highest rung that actually answers the question. Do not descend past it. **Exception — diagnosis reverses this rule.** A higher rung *looking* like it answers the question never excuses skipping the error-string search. Root causes live in issue threads far more often than in documentation, and the minutes that search costs are the cheapest minutes in the whole process.
+- Stop at the highest rung that actually answers the question. Do not descend past it. **Exception — diagnosis reverses this rule.** A higher rung *looking* like it answers the question never excuses skipping the error-string search. Root causes live in issue threads far more often than in documentation.
 - **Lead vs proof.** Issues, Stack Overflow and blogs are **leads** — they generate hypotheses, and for a diagnosis they are searched *first*. They are never the cited basis of an answer. Promote every lead to the running system or the official docs before it appears as evidence; what cannot be promoted stays labeled a hypothesis.
-- **State which rung the answer came from.** If it came from a blog, the user needs to know it came from a blog.
 - **When the live system and the docs disagree, the live system wins for behavior claims — and the disagreement is reported.** That gap is usually the actual finding, not a detail to smooth over.
 
 ## Gate 3 — Design intent
@@ -145,7 +144,7 @@ Required: state the confidence level as a fact.
 | **Hypothesis** | Reasoning, not sourced | Label it a hypothesis, and give **one** command or check that confirms or kills it. |
 | **Unknown** | No basis | Say unknown, and state what would resolve it. |
 
-"I don't know" **passes** this gate. Asserting without evidence **fails** it. A definite tone applied to an unverified claim is the specific failure this gate blocks — it is not the goal of this gate.
+"I don't know" **passes** this gate. Asserting without evidence **fails** it. Applying a definite tone to an unverified claim also fails it.
 
 ## Gate 5 — Optimality
 

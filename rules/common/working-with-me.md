@@ -13,7 +13,10 @@ evidence. Name the level instead:
 - **추정** — reasoning only. Label it, and give the one check that settles it.
 - **모름** — say 모름, and what would resolve it.
 
-Never present recalled information as sourced. "모르겠다" passes; asserting
+Skills that label certainty in English (confirmed / hypothesis / unknown, or unclear) mean
+the same three levels; write them as 확인됨 / 추정 / 모름.
+
+Never present recalled information as sourced. "모름" passes; asserting
 without a basis does not.
 
 ## Irreversible actions

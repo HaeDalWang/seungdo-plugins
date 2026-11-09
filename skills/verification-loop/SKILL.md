@@ -14,14 +14,6 @@ metadata:
 
 Prove the change works with the project's real commands, then report. Evidence, not claims.
 
-## When to Use
-
-- After a non-trivial code change, before saying "done"
-- Before creating a PR
-- After a refactor
-
-Not for docs-only edits, config tweaks, or one-off ops commands.
-
 ## Step 0: Detect what the project actually has
 
 Read `package.json` scripts, `Makefile`, `pyproject.toml`, `go.mod`, `Cargo.toml`, or CI config
@@ -42,7 +34,7 @@ e.g. `npm run lint`, `ruff check .`, `golangci-lint run`.
 
 ### Phase 4: Tests
 Run the existing test command (e.g. `npm test`, `pytest`, `go test ./...`).
-Test scope follows ponytail — no coverage target. If the change has non-trivial logic and no
+No coverage target. If the change has non-trivial logic and no
 check covers it, add the ONE smallest check that fails if the logic breaks.
 
 ### Phase 5–6: Security Scan + Diff Review (changed files only)

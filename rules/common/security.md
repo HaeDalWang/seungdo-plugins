@@ -14,27 +14,26 @@ paths:
 
 Before ANY commit:
 - [ ] No hardcoded secrets (API keys, passwords, tokens)
-- [ ] All user inputs validated
-- [ ] SQL injection prevention (parameterized queries)
-- [ ] XSS prevention (sanitized HTML)
-- [ ] CSRF protection enabled
+- [ ] User input validated; SQL parameterized
 - [ ] Authentication/authorization verified
-- [ ] Rate limiting on all endpoints
 - [ ] Error messages don't leak sensitive data
+- [ ] Web endpoints only: HTML escaped (XSS), CSRF protection, rate limiting
 
 ## Secret Management
 
 - NEVER hardcode secrets in source code
 - ALWAYS use environment variables or a secret manager
 - Validate that required secrets are present at startup
-- Rotate any secrets that may have been exposed
 
 ## Security Response Protocol
 
-If a security issue is found:
-1. STOP immediately
-2. Fix CRITICAL issues before continuing
-3. Rotate any exposed secrets
-4. Review the rest of the codebase for the same pattern
+If you find a security issue:
+1. Stop and tell the user.
+2. Fix CRITICAL issues before continuing, only in files the task lets you edit. In a
+   read-only task, report only.
+3. Rotating a secret is the user's action: name each secret to rotate and where it was
+   exposed.
+4. Search the rest of the codebase for the same pattern.
 
-Use the `security-review` skill for a structured pass over pending changes.
+If a `security-review` skill or `/security-review` command is listed, use it for a
+structured pass over pending changes.

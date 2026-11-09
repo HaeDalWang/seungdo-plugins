@@ -9,45 +9,29 @@ paths:
 Simplicity, YAGNI, reuse, and file count live in [simplicity.md](simplicity.md).
 This file covers the rest.
 
-## Immutability (CRITICAL)
+## Immutability
 
-ALWAYS create new objects, NEVER mutate existing ones:
-
-```
-// Pseudocode
-WRONG:  modify(original, field, value) → changes original in-place
-CORRECT: update(original, field, value) → returns new copy with change
-```
-
-Rationale: Immutable data prevents hidden side effects, makes debugging easier, and enables safe concurrency.
+In new code, return an updated copy instead of mutating the input. In existing code,
+match the file's style.
 
 ## File Size
 
 - 800 lines max per file; split by feature/domain, not by type, when it grows past that.
 
-## Error Handling
+## Errors and Input
 
-ALWAYS handle errors comprehensively:
-- Handle errors explicitly at every level
-- Provide user-friendly error messages in UI-facing code
-- Log detailed error context on the server side
-- Never silently swallow errors
-
-## Input Validation
-
-ALWAYS validate at system boundaries:
-- Validate all user input before processing
-- Use schema-based validation where available
-- Fail fast with clear error messages
-- Never trust external data (API responses, user input, file content)
+- Never swallow errors silently. UI code shows a user-friendly message; server code logs
+  the detailed context.
+- Validate external input (user input, API responses, file content) at system boundaries,
+  with a schema where one exists. Fail fast with a clear error.
 
 ## Naming Conventions
 
-- Variables and functions: `camelCase` with descriptive names
+- Follow the language's idiom and the file's existing names: `camelCase` in JS/TS/Java/
+  Kotlin/Swift, `snake_case` in Python/Rust/Ruby/shell, `MixedCaps` in Go, `PascalCase`
+  for types and components
 - Booleans: prefer `is`, `has`, `should`, or `can` prefixes
-- Interfaces, types, and components: `PascalCase`
-- Constants: `UPPER_SNAKE_CASE`
-- Custom hooks: `camelCase` with a `use` prefix
+- Constants: `UPPER_SNAKE_CASE` where the language uses it
 
 ## Code Smells to Avoid
 
@@ -59,20 +43,10 @@ Prefer early returns over nested conditionals once the logic starts stacking.
 
 Use named constants for meaningful thresholds, delays, and limits.
 
-### Long Functions
-
-Split large functions into focused pieces with clear responsibilities.
-
 ## Code Quality Checklist
 
-Before marking work complete:
-- [ ] Code is readable and well-named
-- [ ] Functions are small (<50 lines)
-- [ ] Files are focused (<800 lines)
-- [ ] No deep nesting (>4 levels)
-- [ ] Proper error handling
-- [ ] No magic numbers (named constants; config only for values that actually vary)
-- [ ] No mutation (immutable patterns used)
+Before marking work complete: functions <50 lines, files <800 lines, nesting ≤4 levels,
+no unnamed magic numbers (config only for values that actually vary).
 
 ## Review Severity
 
@@ -85,5 +59,5 @@ When flagging issues (self-review or requested review), grade by actual impact:
 | MEDIUM | Maintainability concern | Consider fixing |
 | LOW | Style or minor suggestion | Optional |
 
-For an actual review pass (not just self-check), use the `code-review` skill — it runs at
-a chosen effort level and can post findings, apply fixes, or run a deep multi-agent pass.
+For an actual review pass (not just self-check), use a `code-review` skill or
+`/code-review` command if one is listed.

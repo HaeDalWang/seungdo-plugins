@@ -45,14 +45,12 @@ description: 고객 카톡/메신저 회신을 사용자(MSP 엔지니어) 스�
 
 ## 예시
 
-실제로 한 번에 원인이 확인된 메시지:
+좋은 예:
 
 ```
 혹시 apply 출력에 aws_lb_target_group.traefik_alb 에러 나있나요?? 지금 NLB는 active인데 NLB→ALB 타겟그룹이 prod VPC에 안보여서요
 dev 쪽에 같은 이름(traefik-alb-tg-443/80/8000)이 이미 있어서 이름 겹치면 DuplicateTargetGroupName 날 수 있어서 그때는 name에 ${local.env} 넣으시면 됩니다!
 ```
-
-사실(NLB active, TG 없음) → 되묻기(에러 났나요??) → 가능성(날 수 있어서) → 해결책(`${local.env}`).
 
 나쁜 예 — 같은 내용을 해설로 쓴 것:
 
