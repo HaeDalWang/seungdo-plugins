@@ -110,6 +110,10 @@ official docs (context7)
      code (tag it, e.g. [DEBUG-a4f2], so one grep finds it). Record
      the confirmed cause where the next person looks: commit, ticket,
      or customer reply.
+7. Three fixes failed         ← before a fourth attempt, stop
+     each fix moved the symptom or exposed a new one elsewhere →
+     the cause is likely the design, not a missing patch. Show the
+     user what the three attempts revealed and discuss the structure.
 ```
 
 Rules:
