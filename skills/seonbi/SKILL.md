@@ -1,222 +1,63 @@
 ---
 name: seonbi
-description: Answer-quality gate that separates verified from recalled. Locks the question's scope, then checks temporal fit, source ladder, design intent, calibrated certainty, and optimality; for a diagnosis, searches prior art before theorizing. Use for any factual, technical, version-specific, or troubleshooting question; any answer that cites docs, quotes a config option, or recommends a change to a running system; and "are you sure / what's the source / why did this happen", 근거, 출처, 확실해, 장애, 트러블슈팅, 선비 — including questions that look answerable from memory, where unsourced answers slip through.
+description: Everyday answer gate that makes the user convinced, not just told — every technical answer separates verified from recalled, shows why the conclusion follows in words the user can repeat to others, and gives each piece of evidence in a form the user can re-check. Use for any factual, technical, version-specific, or config question; any answer that cites docs or recommends a change; and "are you sure / what's the source / why", 근거, 출처, 확실해, 왜, 납득, 선비 — including questions that look answerable from memory. For an incident or unexplained failure, use seonbi-rca instead.
 ---
 
 # Seonbi
 
-An answer-quality gate. It makes one distinction impossible to hide: **what was verified vs. what was recalled.** The goal is that a wrong answer is visibly wrong before it ships.
+The answer is done when the user can **(1) explain it to someone else in their own words** and **(2) re-check every piece of evidence themselves**. A confident wrong answer is the failure this exists to prevent; an unexplained right answer is the second failure.
 
-**Prime directive: never hide uncertainty.** A confident wrong answer is the most expensive output this skill exists to prevent.
+## 1. Lock the question
 
----
+Restate in one line what is being answered. If it reads two ways, ask — do not pick the reading that is easier to source. If the target shifts mid-answer, say so.
 
-## Precondition — scope lock
+## 2. Fetch evidence when the claim needs it
 
-This runs *before* the five gates. The gates evaluate the **evidence**; this settles the **target**. Well-sourced answers to the wrong question fail no gate, which is exactly why this comes first.
+Fetch before answering when the claim is version-specific or may have changed after the training cutoff, quotes a doc / option / default / limit, drives a change to a running system, or the user questioned it. Otherwise answer from recall and label it `recall, unverified`.
 
-- Restate what is being answered in one line before gathering anything.
-- If the question reads two ways, **ask** — do not pick the reading that is easier to source.
-- If the target shifts mid-answer (research turned up something more interesting), say so explicitly. Never swap silently.
+Pick the method by the evidence needed, then the most precise tool at hand:
 
----
-
-## Tooling contract
-
-Verification is done with tools, not from memory.
-
-| Need | Tool |
-|---|---|
-| What the system **actually** does right now | shell: `rg`/`grep`, `git log`/`blame`, `kubectl`, `aws` CLI, `terraform plan`/`state`, real logs and metrics |
-| Library / framework / API docs, version-specific behavior | **context7** — `use context7`<br>fallback: **WebFetch** the official doc URL directly |
-| Release notes, GitHub issues & PRs, CVEs, RFCs, blogs, everything else | **exa** — `use exa`<br>fallback: built-in **WebSearch** / **WebFetch** |
-| An error string, stack trace, or symptom — **has someone hit this already** | **exa** first: official repo issues & PRs, then Stack Overflow / blogs<br>fallback: built-in **WebSearch** |
+- **What the system actually does** → inspect it read-only (`rg`, `git log`, `kubectl get`, cloud CLI). Beats docs for behavior; a docs-vs-system gap is reported, not smoothed.
+- **What is supported / intended** → the vendor's official docs at the target's version.
+- **Known bug, fixed in which version** → the project's own issues, PRs, releases (`gh search issues`, `gh release view`).
+- **Exact strings** → exact-match search, not semantic search.
 
 Rules:
 
-1. **A citation must come from a tool result in this session.** Never write "per the official docs" for a page not fetched in this session. Recalled documentation presented as sourced is the single worst failure of this skill — it forges the credibility the gates are supposed to establish.
-2. **Exhaust the search path before falling back to memory.** If a tool is unavailable, times out, or returns nothing useful, walk down the chain first — exa → built-in **WebSearch** / **WebFetch** → **WebFetch** the official URL directly. Only when *every* search path is gone: answer from memory if that is the best available, and label it `Source: none (recall, unverified)` in the footer. **Never skip to recall while a search tool is still reachable**, and never fall back silently.
-3. Evidence gathering is **read-only**. Never mutate state to find something out.
-4. Record the URL and the document's version or date at fetch time; for live inspection, record the command and when it was run. "The docs say X" without a version is not a source.
+- **A citation must come from a tool result in this session.** Never write "per the docs" for a page not fetched now.
+- Issues, forum posts, and blogs are **leads**, not proof — confirm against the system or official docs before citing.
+- A method fails → try another route to the same evidence before falling back to recall. Never fall back silently.
+- Evidence gathering never changes state.
 
----
+## 3. Write it so the user is convinced
 
-## Gate 1 — Temporal fit
+- **Conclusion first**, in one sentence.
+- **Why**: the chain from evidence to conclusion, one plain sentence per link — the version the user could say to a team lead or customer. Expand every abbreviation and term of art on first use unless the user used it first.
+- **Re-check**: each piece of evidence as something the user can open or run — a URL with version/date, or a read-only command and what its output should show.
+- **Weakest link**: name the step that rests on a hypothesis or recall. That is where the user should push back.
+- **Alternatives**: if another answer was plausible, one line on why it lost.
+- Keep it proportional: a one-line fact gets one line of why.
 
-The evidence must apply to **this** target, at **this** version.
+## 4. Certainty
 
-- Establish the target's exact version, release date, or commit **before** citing anything. If it is unknown, find it or ask.
-- The test is **applicability, not chronology.** A document from a *later* version is valid evidence when it explains the target — a changelog entry, a fix PR, an issue thread. Cite it as "fixed in X" or "introduced in Y", never as the target's current behavior.
-- A document from an *earlier* version is invalid the moment the code path changed. Same wording, different implementation, different answer.
-- Anything released after the model's training cutoff must be fetched. It cannot be recalled.
+State it as a fact; ban bare hedges ("probably", "should work", "I think", "it seems").
 
-## Gate 2 — Source ladder
+- **Confirmed** — verified this session. Say it flatly, cite it.
+- **Hypothesis** — reasoning only. Label it and give the one check that settles it.
+- **Unknown** — say unknown and what would resolve it.
 
-**First decide what kind of claim this is.** The three kinds have different top rungs — and the third one is searched in a different order.
+"I don't know" passes. A definite tone on an unverified claim fails. A workaround that depends on undocumented behavior is labeled a hack, with the intended path beside it.
 
-| Claim | Highest authority |
-|---|---|
-| "How does it **actually behave** right now" | the artifact itself — running system, deployed config, the code in this repo |
-| "How is it **supposed to** behave / what is supported" | official documentation |
-| "**Why** did this break / what is causing this" | prior art is the fastest way *in* — but it is a lead, not the basis (see the Diagnosis ladder) |
-
-**Behavior ladder** — for the first kind:
+## 5. Footer — mandatory
 
 ```
-the running system / the code in front of you
-  (rg, git log, kubectl, aws cli, terraform state, actual logs)
-    → official docs (context7)
-      → official repo: releases, issues, PRs, source (exa)
-        → community / blog (exa), weighted by author credibility
+Source: <URL or command> (<version/date>) | Certainty: confirmed | hypothesis | unknown | Verify: <command or check>
 ```
 
-**Spec ladder** — for the second kind:
+One line per source when there are several. Nothing fetched → `Source: none (recall, unverified)`. `Verify:` is omitted only when certainty is confirmed and no action is proposed.
 
-```
-official docs (context7)
-  → official repo: releases, issues, PRs, source (exa)
-    → community / blog (exa), weighted by author credibility
-```
+## Hand off
 
-**Diagnosis ladder** — for the third kind. **This one is an order of search, not an order of authority.**
+Incident, outage, unexplained error, or "why did this break" → switch to **seonbi-rca**; its findings end in this skill's section 3 and footer.
 
-```
-1. Pin the symptom
-     the exact error string, the log line, the timestamp,
-     and what changed immediately before it
-   + the symptom check: ONE read-only command that shows the symptom
-     now (curl, kubectl describe, a log query, a failing test).
-     Run it once and record the output. A past one-off event has no
-     check — say so; the pinned log line + timestamp stands in.
-2. Search prior art          ← NOT skippable
-     normalize first: strip the variable parts
-     (ids, paths, hostnames, timestamps, ports)
-     and search the invariant remainder, quoted
-       a. official repo issues & PRs — known? already fixed in X? still open?
-       b. Stack Overflow / blogs / release notes — same symptom pattern
-3. Rank the hypotheses        ← what prior art gives you is a lead, never a proof
-     at least two, ranked, each with a falsifiable prediction:
-     "If X is the cause, <check> shows Y."
-     No prediction → not a hypothesis yet; sharpen or drop it.
-     Show the ranked list before testing — the user's context
-     often re-ranks it in one line.
-4. Promote it                 ← run each prediction's check against the
-                                running system (logs, config, state) and
-                                the official docs, one variable at a time
-5. Nothing promotes → emit the Blocked block, listing the leads AS leads
-6. After the fix: close the loop
-     re-run the step-1 symptom check — the fix is confirmed only
-     when it no longer shows the symptom. Remove temporary debug
-     code (tag it, e.g. [DEBUG-a4f2], so one grep finds it). Record
-     the confirmed cause where the next person looks: commit, ticket,
-     or customer reply.
-7. Three fixes failed         ← before a fourth attempt, stop
-     each fix moved the symptom or exposed a new one elsewhere →
-     the cause is likely the design, not a missing patch. Show the
-     user what the three attempts revealed and discuss the structure.
-```
-
-Rules:
-
-- Stop at the highest rung that actually answers the question. Do not descend past it. **Exception — diagnosis reverses this rule.** A higher rung *looking* like it answers the question never excuses skipping the error-string search. Root causes live in issue threads far more often than in documentation.
-- **Lead vs proof.** Issues, Stack Overflow and blogs are **leads** — they generate hypotheses, and for a diagnosis they are searched *first*. They are never the cited basis of an answer. Promote every lead to the running system or the official docs before it appears as evidence; what cannot be promoted stays labeled a hypothesis.
-- **When the live system and the docs disagree, the live system wins for behavior claims — and the disagreement is reported.** That gap is usually the actual finding, not a detail to smooth over.
-
-## Gate 3 — Design intent
-
-Do not use a thing against the way it was built to be used.
-
-- No workaround that depends on undocumented behavior, internal APIs, or side effects.
-- No shortcut that "works" by defeating the mechanism's purpose.
-- If the only thing that works is against design intent, **say so explicitly** and present the intended path next to it, with the cost of each. Choosing a hack knowingly is fine. Presenting a hack as the correct answer is not.
-
-## Gate 4 — Calibrated certainty
-
-**Ban vague language. Do not ban uncertainty.**
-
-Forbidden: "probably", "I think", "should work", "usually", "it seems", "in most cases" — hedges with no evidence behind them.
-
-Required: state the confidence level as a fact.
-
-| Level | Meaning | How to phrase it |
-|---|---|---|
-| **Confirmed** | Verified against a source this session | "It does / it does not." Cite it. |
-| **Hypothesis** | Reasoning, not sourced | Label it a hypothesis, and give **one** command or check that confirms or kills it. |
-| **Unknown** | No basis | Say unknown, and state what would resolve it. |
-
-"I don't know" **passes** this gate. Asserting without evidence **fails** it. Applying a definite tone to an unverified claim also fails it.
-
-## Gate 5 — Optimality
-
-**Optimal, not maximum effort.** Pushing hard on the first idea is not the same as the right answer.
-
-- Look at the constraints around the problem, not just the problem: other environments, other teams' dependencies, cost, maintenance burden, what breaks next month.
-- Name the tradeoff out loud. An answer with no stated tradeoff usually means the alternatives were not considered.
-- If a quick fix is chosen under time pressure, mark it as temporary and name the real fix in the same breath.
-
----
-
-## Conditional module — when the answer changes a running system
-
-Applies to incidents, deploys, config changes, migrations. Skipped for pure factual questions.
-
-1. **Run the Diagnosis ladder** (Gate 2) before proposing any change.
-2. **Verify environment facts first** — actual version, actual config, actual log lines, via the shell tools above. Diagnosing from assumed state is the most common way to be confidently wrong in production, and no amount of good sourcing fixes it.
-3. **Prefer reversible actions first.** Order proposals by how easily they undo.
-4. **State the blast radius.** What else is touched, who else notices, what the rollback is.
-
----
-
-## When a gate cannot be passed
-
-Silence is not an answer — for a novel problem, official docs often will not exist. Do not pretend the gate passed, and do not stall. Emit this instead:
-
-```
-Blocked: <which gate>
-Why: <what is missing>
-Best hypothesis: <explicitly labeled as a hypothesis>
-To confirm: <1–2 commands or checks that settle it>
-```
-
-### The one hard stop
-
-Blocked-and-proceed is the default, with a single exception: **an irreversible action on an unverified basis.** There, no hypothesis and no proposal — emit only the verification steps needed to establish the basis, and stop.
-
-Irreversible means: data loss, unrecoverable state, production traffic with no rollback path, anything that cannot be undone inside the current window.
-
-## Output footer — mandatory
-
-Every factual or technical answer ends with:
-
-```
-Source: <URL or command> (<rung>, <version/date>) | Certainty: confirmed | hypothesis | unknown | Verify: <command or check>
-```
-
-- One line per source when there are several. Otherwise this is **one line**, not a block.
-- Nothing was fetched → `Source: none (recall, unverified)`.
-- `Verify:` is omitted only when certainty is `confirmed` **and** the answer proposes no action. It is required for every `hypothesis` or `unknown`, and for any answer that recommends a change.
-
-This footer is the only externally visible proof the gates ran. Do not omit it, and do not run the checks "silently" instead of emitting it.
-
----
-
-## Pre-answer check
-
-Every box must hold before the answer ships.
-
-```
-□ Scope     Answering what was asked — not the adjacent question easier to source
-□ Version   Target version known; the evidence applies to it
-□ Source    Every citation came from a tool result this session (recalled-as-sourced
-            is the worst failure). Behavior claim → the real system was checked.
-            Rung stated. A docs-vs-reality gap is reported, not smoothed.
-□ Lead      Issue threads and blogs promoted to system/docs before being cited
-□ Prior art Diagnosis → the error string was searched before theorizing
-□ Loop      Diagnosis → symptom check recorded, ≥2 hypotheses ranked with
-            predictions, check re-run after the fix
-□ Intent    The designed path — or a hack labeled as one, next to the intended path
-□ Certainty Confirmed / hypothesis / unknown stated as fact; no bare hedges
-□ Optimal   Surrounding conditions considered, tradeoff named
-□ Stop      Irreversible + unverified → only verification steps, then stop
-□ Footer    Attached
-```
+Irreversible action on an unverified basis (data loss, no rollback path) → no proposal; give only the checks that establish the basis, and stop.
