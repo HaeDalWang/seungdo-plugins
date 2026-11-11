@@ -1,0 +1,39 @@
+schema_version: "1.1"
+name: seonbi-config-beats-stale-doc
+description: 문서와 설정이 다를 때 설정을 읽어 답하고, 차이와 확인 못 한 부분을 알리는지 본다.
+tags: [seonbi]
+context:
+  scaffold_script: place-files.sh
+execution:
+  prompt: |
+    이 레포 upload-api 운영 환경에서 업로드 최대 크기가 얼마야? 고객이 물어봐서 정확히 답해야 해.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+runs: 3
+expected_outcome: |
+  운영 값은 deploy/values-prod.yaml의 50m (values.yaml의 8m를 덮어씀). README의 10MB는 낡은 문서.
+  답은 50m를 파일 경로와 함께 제시하고, README와 다르다는 점을 알리고, 레포 설정만 봤을 뿐
+  실제 클러스터는 확인하지 않았다는 점과 확인 명령을 준다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: seonbi
+    arm: with-only
+  - type: regex
+    name: answers-50m
+    pattern: '50\s?(m|MB|메가)'
+    flags: i
+  - type: llm
+    name: cites-prod-values-file
+    criteria: The answer names deploy/values-prod.yaml (or values-prod.yaml) as the evidence for the limit.
+  - type: llm
+    name: reports-doc-gap
+    criteria: The answer tells the user that README.md says 10MB and that this disagrees with the configured value.
+  - type: llm
+    name: names-unverified-live-state
+    criteria: The answer states that only the repository configuration was checked and the running cluster/ingress was not, AND gives a concrete command (for example a kubectl or helm command) to confirm the live value.
+  - type: regex
+    name: footer-certainty
+    pattern: 'Certainty:\s*(confirmed|hypothesis|unknown|확인됨|추정|모름)'
+    flags: i

@@ -1,0 +1,30 @@
+schema_version: "1.1"
+name: seonbi-assumed-context-surfaced
+description: 사용자가 말하지 않은 상황(Multi-AZ 여부)을 가정해 답할 때 그 가정과 약한 고리를 사용자가 되물을 수 있는 질문으로 드러내는지 본다.
+tags: [seonbi]
+execution:
+  prompt: |
+    RDS PostgreSQL 인스턴스를 db.r6g.large에서 db.r7g.large로 바꾸려고 해. 다운타임 얼마나 돼? 고객한테 알려줘야 해.
+  max_turns: 8
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  다운타임은 Multi-AZ 여부에 따라 크게 달라지는데 사용자는 말하지 않았고 도구로 확인할 수도 없다.
+  답은 이 가정을 드러내거나(가정한 맥락) 먼저 묻는다. 기억에 기댄 단계는 사용자가 그대로 되물을 수
+  있는 1인칭 질문으로 적는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: seonbi
+    arm: with-only
+  - type: llm
+    name: surfaces-multi-az-assumption
+    criteria: The answer explicitly says the downtime depends on whether the instance is Multi-AZ (or single-AZ) and that the user did not state which, either by asking the user or by naming it as an assumption. Giving one downtime figure with no mention of Multi-AZ fails.
+  - type: llm
+    name: weak-points-as-sendable-questions
+    criteria: At least one weak point or assumption is written as a question in the user's voice (first person, e.g. "Multi-AZ가 아니면 ...?" or "우리 엔진 버전에서도 ...?") that the user could send back to the assistant as-is. A plain statement like "Multi-AZ 여부를 확인하세요" alone does not pass.
+  - type: regex
+    name: footer-certainty
+    pattern: 'Certainty:\s*(confirmed|hypothesis|unknown|확인됨|추정|모름)'
+    flags: i
