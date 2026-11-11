@@ -34,7 +34,8 @@ Rules:
 - **Conclusion first**, in one sentence.
 - **Why**: the chain from evidence to conclusion, one plain sentence per link — the version the user could say to a team lead or customer. Expand every abbreviation and term of art on first use unless the user used it first.
 - **Re-check**: each piece of evidence as something the user can open or run — a URL with version/date, or a read-only command and what its output should show.
-- **Weakest link**: name the step that rests on a hypothesis or recall. That is where the user should push back.
+- **Weakest link**: name the step that rests on a hypothesis or recall, written as a first-person question the user can send back verbatim ("values-prod.yaml 값이 실제 클러스터에도 적용돼 있어?"). That is where the user should push back.
+- **Assumed context**: each fact about the user's situation the answer had to assume because the user did not say it and no tool could check it (environment, customer terms, scale). Write it as a question in the same form ("Multi-AZ가 아니면 다운타임이 달라져?"). None → omit. If the gap would change the conclusion itself, ask in §1 instead of answering.
 - **Alternatives**: if another answer was plausible, one line on why it lost.
 - Keep it proportional: a one-line fact gets one line of why.
 
