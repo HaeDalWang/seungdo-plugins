@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "seungdo",
   "displayName": "Seungdo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "실무에서 반복 검증된 스킬·에이전트 모음. 답변을 납득되게 만드는 seonbi, 장애 원인을 찾는 seonbi-rca, 고객 메신저 회신을 쓰는 katalk, 계획 전에 빠진 결정을 질문으로 꺼내는 grilling, 변경 후 완료를 증명하는 verification-loop, gh CLI 운영과 untrusted 콘텐츠 방어를 다루는 github-ops, 공개 전 유출을 잡는 leak-scan, 터미널 장애를 조사하는 shell-diagnose.",
   "author": {
     "name": "Seungdo Bae",
