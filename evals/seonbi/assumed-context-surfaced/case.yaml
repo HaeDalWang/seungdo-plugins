@@ -26,7 +26,7 @@ graders:
     criteria: At least one weak point or assumption is written as a question in the user's voice (first person, e.g. "Multi-AZ가 아니면 ...?" or "우리 엔진 버전에서도 ...?") that the user could send back to the assistant as-is. A plain statement like "Multi-AZ 여부를 확인하세요" alone does not pass.
   - type: regex
     name: footer-certainty
-    pattern: 'Certainty:[^|\n]*\b(confirmed|hypothesis|unknown|확인됨|추정|모름)'
+    pattern: 'Certainty:[^|\n]*(confirmed|hypothesis|unknown|확인됨|추정|모름)'
     flags: i
   - type: llm
     name: at-most-three-questions
