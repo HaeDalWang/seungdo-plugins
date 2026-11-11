@@ -1,6 +1,6 @@
 ---
 name: seonbi
-description: Everyday answer gate that makes the user convinced, not just told — every technical answer separates verified from recalled, shows why the conclusion follows in words the user can repeat to others, and gives each piece of evidence in a form the user can re-check. Use for any factual, technical, version-specific, or config question; any answer that cites docs or recommends a change; and "are you sure / what's the source / why", 근거, 출처, 확실해, 왜, 납득, 선비 — including questions that look answerable from memory. For an incident or unexplained failure, use seonbi-rca instead.
+description: Everyday answer gate that makes the user convinced, not just told — every technical answer separates verified from recalled, shows why the conclusion follows in words the user can repeat to others, and gives each piece of evidence in a form the user can re-check. Use for any factual, technical, version-specific, or config question; any answer that cites docs or recommends a change; any request for a destructive or irreversible command (drop, delete, truncate, force-push, terminate, 지우는 명령, 삭제해줘); and "are you sure / what's the source / why", 근거, 출처, 확실해, 왜, 납득, 선비 — including questions that look answerable from memory. For an incident or unexplained failure, use seonbi-rca instead.
 ---
 
 # Seonbi
@@ -36,6 +36,7 @@ Rules:
 - **Re-check**: each piece of evidence as something the user can open or run — a URL with version/date, or a read-only command and what its output should show.
 - **Weakest link**: name the step that rests on a hypothesis or recall, written as a first-person question the user can send back verbatim ("values-prod.yaml 값이 실제 클러스터에도 적용돼 있어?"). That is where the user should push back.
 - **Assumed context**: each fact about the user's situation the answer had to assume because the user did not say it and no tool could check it (environment, customer terms, scale). Write it as a question in the same form ("Multi-AZ가 아니면 다운타임이 달라져?"). None → omit. If the gap would change the conclusion itself, ask in §1 instead of answering.
+- **Question cap**: all questions in the answer — weakest link, assumed context, clarifying — total at most 3, most consequential first, each under ~120 characters. No closing offer ("~할까요?").
 - **Alternatives**: if another answer was plausible, one line on why it lost.
 - Keep it proportional: a one-line fact gets one line of why.
 
