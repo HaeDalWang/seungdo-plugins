@@ -33,5 +33,5 @@ graders:
     flags: i
   - type: regex
     name: footer-certainty
-    pattern: 'Certainty:\s*(confirmed|hypothesis|unknown|확인됨|추정|모름)'
+    pattern: 'Certainty:[^|\n]*\b(confirmed|hypothesis|unknown|확인됨|추정|모름)'
     flags: i

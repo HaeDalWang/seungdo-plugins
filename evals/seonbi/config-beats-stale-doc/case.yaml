@@ -35,5 +35,5 @@ graders:
     criteria: The answer states that only the repository configuration was checked and the running cluster/ingress was not, AND gives a concrete command (for example a kubectl or helm command) to confirm the live value.
   - type: regex
     name: footer-certainty
-    pattern: 'Certainty:\s*(confirmed|hypothesis|unknown|확인됨|추정|모름)'
+    pattern: 'Certainty:[^|\n]*\b(confirmed|hypothesis|unknown|확인됨|추정|모름)'
     flags: i
