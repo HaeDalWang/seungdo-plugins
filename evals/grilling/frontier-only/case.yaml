@@ -1,0 +1,22 @@
+schema_version: "1.1"
+name: grilling-frontier-only
+description: 결정 사이에 의존성이 있을 때 한 라운드에 선행 결정이 열려 있는 의존 질문을 섞지 않는지 본다.
+tags: [grilling]
+execution:
+  prompt: |
+    온프렘 Oracle DB를 AWS로 옮기는 계획을 잡으려고 해. 아직 아무것도 안 정했어. 따져봐줘.
+  max_turns: 8
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  대상 엔진 선택이 먼저이고 이관 도구(DMS/SCT 등)·스키마 변환 방식은 그 결정에 달려 있다.
+  첫 라운드 질문은 지금 답할 수 있는 것만 담고, 같은 라운드에서 열려 있는 다른 질문에 의존하는 질문은 넣지 않는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: grilling
+    arm: with-only
+  - type: llm
+    name: no-dependent-question-in-same-round
+    criteria: Read all questions in this round. Fail if any question can only be answered or meaningfully asked after another question in the same round is settled (for example asking which migration tool to use while the target engine is still an open question in the same round). Pass if every question stands independently, or dependent decisions are explicitly deferred to a later round.

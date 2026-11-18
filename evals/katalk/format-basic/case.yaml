@@ -1,0 +1,34 @@
+schema_version: "1.1"
+name: katalk-format-basic
+description: 관찰한 사실을 주면 코드블록 하나, 3줄 이내, ?? 되묻기 형식의 카톡을 쓰는지 본다.
+tags: [katalk]
+execution:
+  prompt: |
+    방금 확인한 사실이야. prod VPC에 aws_lb_target_group.web_alb 타겟그룹이 안 보이고, dev에는 같은 이름 web-alb-tg-443이 이미 있어. NLB는 active야. 고객 담당자한테 카톡 뭐라고 보내?
+  max_turns: 6
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  답은 복사해 보낼 코드블록 하나에 2~3줄로, 관찰한 사실을 먼저 말하고 "~인가요??"로 되묻는다.
+  고객 리소스를 해설하지 않는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: katalk
+    arm: with-only
+  - type: regex
+    name: exactly-one-code-block
+    pattern: '^(?![\s\S]*```[\s\S]*```[\s\S]*```)[\s\S]*```[^\n]*\n[\s\S]*?\n```'
+  - type: regex
+    name: at-most-3-lines-in-block
+    pattern: '```[^\n]*\n(?:[ \t]*\n)*(?:[^\n`]*\S[^\n]*\n(?:[ \t]*\n)*){1,3}```'
+  - type: regex
+    name: double-question-mark
+    pattern: '\?\?'
+  - type: llm
+    name: fact-first
+    criteria: In the message inside the code block, the first line starts with what was actually observed (for example the target group missing in prod, or the same name existing in dev) before asking or proposing anything.
+  - type: llm
+    name: no-resource-lecture
+    criteria: The message does not lecture the customer about their own resources or give a multi-sentence explanation or background (for example explaining that target group names must be unique per account). It states observations and asks "is that right?" style questions.

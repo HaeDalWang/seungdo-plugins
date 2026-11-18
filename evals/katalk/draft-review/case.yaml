@@ -1,0 +1,37 @@
+schema_version: "1.1"
+name: katalk-draft-review
+description: 사용자가 쓴 초안을 검토할 때 심각도 순으로 짚고 항목당 한 줄만 제안하며 전체를 다시 쓰지 않는지 본다.
+tags: [katalk]
+execution:
+  prompt: |
+    고객한테 보낼 카톡 초안인데 검토해줘.
+
+    ```
+    안녕하세요 담당자님. 확인해보니 지금 NLB는 us-east-1에 있는데 타겟그룹은 ap-northeast-2에 만들어져서 연결이 안 되는 상태입니다. 그쪽에서 한번 봐주시면 좋겠습니다.
+    ```
+
+    (참고: 확인한 사실은 NLB와 타겟그룹 둘 다 ap-northeast-2에 있고, 타겟그룹이 NLB 리스너에 아직 연결이 안 된 것이야.)
+  max_turns: 6
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  리전이 다르다는 사실 오류를 🔴, "그쪽에서 한번 봐주시면"이라는 모호한 요청을 🟡로 순위대로 짚는다.
+  항목마다 바꿀 문장 한 줄만 제안하고 전체를 다시 쓰지 않으며 "나머지는 정확합니다"로 끝낸다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: katalk
+    arm: with-only
+  - type: regex
+    name: severity-markers
+    pattern: '🔴[\s\S]*🟡'
+  - type: regex
+    name: ends-with-rest-accurate
+    pattern: '나머지는 정확합니다'
+  - type: llm
+    name: one-replacement-line-per-issue
+    criteria: Each issue flagged (the region factual error, the ambiguous "그쪽에서 한번 봐주시면" request) is followed by exactly one proposed replacement sentence/line, not several alternatives or a paragraph.
+  - type: llm
+    name: does-not-rewrite-whole-message
+    criteria: The answer does NOT present a complete rewritten version of the whole message. Only short replacement lines for the flagged phrases appear.

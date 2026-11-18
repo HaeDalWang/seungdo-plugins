@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: katalk-not-for-ticket
+description: Zendesk 티켓 회신처럼 긴 문서는 카톡 형식(2~3줄)으로 쓰지 않는지 본다.
+tags: [katalk]
+execution:
+  prompt: |
+    Zendesk 티켓 #4821에 달 회신 써줘. 고객이 EKS 노드그룹 업그레이드 절차를 물었어. 단계별 절차랑 배경 설명, 주의사항까지 들어가야 해.
+  max_turns: 6
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  티켓 회신은 katalk 스킬 대상이 아니다. 답은 단계별 절차와 배경을 갖춘 긴 문서 형식이고 2~3줄 메신저 형식이 아니다.
+  (negated tool_used 채점기가 없어 llm 채점기만 사용)
+graders:
+  - type: llm
+    name: not-messenger-format
+    criteria: The answer is a structured ticket reply (multiple steps, background, cautions, several lines or sections). It is NOT squeezed into a 2-3 line messenger message with a "~인가요??" re-ask. A 2-3 line reply in one code block fails.

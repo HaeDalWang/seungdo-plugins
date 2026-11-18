@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: grilling-certainty-on-recommendation
+description: 레포 사실에 기댄 추천 답에 확신 수준(확인됨/추정)을 붙이는지 본다.
+tags: [grilling]
+context:
+  scaffold_script: place-files.sh
+execution:
+  prompt: |
+    notes-api를 노드그룹 교체하면서 무중단으로 돌리고 싶어. 이 폴더 보고 빠진 거 질문해줘.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+runs: 3
+expected_outcome: |
+  추천 답이 deploy/values-prod.yaml 등 파일에서 읽은 사실(replicaCount 1, PDB 꺼짐, gp2 볼륨)에 기대면
+  그 추천에 confirmed/hypothesis(확인됨/추정) 라벨이 붙는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: grilling
+    arm: with-only
+  - type: regex
+    name: certainty-label-present
+    pattern: '(confirmed|hypothesis|확인됨|추정)'
+    flags: i
+  - type: llm
+    name: fact-based-recommendations-labeled
+    criteria: Every recommended answer that rests on a fact from the repo files (for example replicaCount 1, PDB disabled, gp2 storage) carries a certainty label (confirmed / hypothesis, or 확인됨 / 추정), with a hypothesis naming the check that would settle it. Recommendations that rest on no repo fact do not need a label. Fail if a fact-based recommendation has no label.

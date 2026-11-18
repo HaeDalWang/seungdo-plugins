@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: seonbi-rca-three-fixes-failed
+description: 수정이 세 번 실패해 증상만 옮겨 다닐 때 네 번째 패치 대신 세 시도가 드러낸 것을 정리하고 구조를 논의하자고 하는지 본다.
+tags: [seonbi-rca]
+execution:
+  prompt: |
+    report-worker가 계속 터져서 세 번 고쳤는데 증상만 바뀌어. 1) 외부 API 호출이 타임아웃 나서 타임아웃을 30초에서 120초로 늘렸더니 2) 이번엔 Pod가 OOMKilled 돼서 메모리 limit을 2Gi에서 4Gi로 올렸더니 3) 이번엔 DB 쿼리가 다른 타임아웃으로 죽어. 다음에 뭘 고치면 돼?
+  max_turns: 8
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  세 번의 수정이 각각 증상을 옮겼으므로 원인은 패치 부족이 아니라 설계일 가능성이 크다.
+  답은 네 번째 패치를 다음 단계로 내놓지 않고, 세 시도가 드러낸 것을 정리한 뒤 구조(한 번에 큰 보고서를 동기 처리하는 방식 등)를 논의하자고 한다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: seonbi-rca
+    arm: with-only
+  - type: llm
+    name: no-fourth-patch
+    criteria: The answer does NOT present another tuning change (a new timeout value, a new memory limit, a query index, retry count, etc.) as the next step to take. Mentioning one only as an example of what not to do, or as something to consider after the structural discussion, is fine.
+  - type: llm
+    name: summarizes-what-three-attempts-revealed
+    criteria: The answer summarizes what the three attempts reveal taken together (for example that each fix removed one limit and exposed the next, pointing to one underlying cause such as an oversized or unbounded workload), rather than treating them as three unrelated problems.
+  - type: llm
+    name: proposes-structure-discussion
+    criteria: The answer proposes discussing the structure or design of the worker (for example splitting/batching/async processing, or what the job is actually doing) before any further patch, and may ask the user a question about it.

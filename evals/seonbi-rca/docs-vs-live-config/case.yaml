@@ -1,0 +1,34 @@
+schema_version: "1.1"
+name: seonbi-rca-docs-vs-live-config
+description: 문서와 실제 설정이 다를 때 설정을 믿고 로그 줄과 설정 변경분에 원인을 묶으며, 순위 있는 가설과 기각한 가설을 내놓는지 본다.
+tags: [seonbi-rca]
+context:
+  scaffold_script: place-files.sh
+execution:
+  prompt: |
+    어제 배포하고 나서 shop-api가 500을 내. 이 폴더에 로그랑 배포 설정 있으니까 원인 찾아줘.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+runs: 3
+expected_outcome: |
+  로그의 10:00:44 connection refused(10.20.3.15:5432)와 values-prod.yaml의 host/port 변경(6432, orders-pg-v2)을
+  묶어 원인을 짚는다. README의 옛 호스트는 낡은 문서이고 실제 설정을 우선하며 그 차이를 알린다.
+  순위 있는 가설 2개 이상(각각 반증 가능한 확인), 기각한 가설과 기각 근거를 적는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: seonbi-rca
+    arm: with-only
+  - type: llm
+    name: cause-pinned-to-log-and-config
+    criteria: The answer ties the cause to BOTH the log line (connection refused to port 5432 right after the deploy, around 10:00:44) AND the deploy config change (db host/port changed to orders-pg-v2 / 6432). Naming only one of the two fails.
+  - type: llm
+    name: config-over-readme-gap-named
+    criteria: The answer treats the actual deploy config (deploy/values-prod.yaml) as authoritative over README.md and explicitly tells the user that README still documents the old host/port, i.e. names the gap between the doc and the live config.
+  - type: llm
+    name: ranked-falsifiable-hypotheses
+    criteria: The answer lists at least two hypotheses in ranked order, and each one comes with a falsifiable check phrased like "if X is the cause, then <check> shows Y" (a concrete command, log query or file check with an expected result).
+  - type: llm
+    name: ruled-out-with-reason
+    criteria: The answer lists at least one hypothesis that was ruled out (or marks it as not yet ruled out), and for each ruled-out one states the specific check or evidence that ruled it out.

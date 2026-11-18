@@ -1,0 +1,24 @@
+schema_version: "1.1"
+name: katalk-no-premature-outage
+description: 고객이 배포 중일 때 중간 상태를 장애로 단정하지 않고 에러 여부나 배포 완료 여부를 묻는지 본다.
+tags: [katalk]
+execution:
+  prompt: |
+    고객이 지금 배포(terraform apply) 중인데 ALB가 아직 안 뜬 것 같아. 고객한테 뭐라고 보내?
+  max_turns: 6
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  배포는 시간이 걸리므로 장애나 실패로 단정하지 않는다. "혹시 에러 났나요??", "배포 아직 진행 중인가요??"처럼 묻는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: katalk
+    arm: with-only
+  - type: llm
+    name: no-outage-assertion
+    criteria: The drafted message does NOT assert that there is an outage, failure, or error (for example "장애가 났습니다", "배포가 실패했습니다", "ALB 생성이 안 됩니다"). Stating that the ALB is not visible yet as an observation is fine.
+  - type: llm
+    name: asks-error-or-progress
+    criteria: The drafted message asks the customer whether an error appeared or whether the deployment has finished / is still in progress.

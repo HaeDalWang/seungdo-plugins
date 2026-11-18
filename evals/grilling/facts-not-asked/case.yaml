@@ -1,0 +1,30 @@
+schema_version: "1.1"
+name: grilling-facts-not-asked
+description: 파일에서 알 수 있는 사실(현재 클러스터 버전)은 직접 찾고 사용자에게 묻지 않으며, 번호 매긴 질문마다 추천 답을 달고 계획을 아직 쓰지 않는지 본다.
+tags: [grilling]
+context:
+  scaffold_script: place-files.sh
+execution:
+  prompt: |
+    EKS 업그레이드 계획 잡으려고 해. 이 폴더에 테라폼 있어. 빠진 거 질문해줘.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+runs: 3
+expected_outcome: |
+  현재 클러스터 버전(1.29)은 terraform/eks.tf에 있으므로 사용자에게 묻지 않는다. 질문은 번호를 매기고
+  각각 추천 답을 달며, 전체 업그레이드 계획은 아직 쓰지 않는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: grilling
+    arm: with-only
+  - type: llm
+    name: does-not-ask-current-version
+    criteria: The answer does NOT ask the user what the current EKS cluster version (or addon versions) is; it either states the value found in terraform/eks.tf (1.29) or simply does not ask. Asking "현재 클러스터 버전이 뭔가요?" fails.
+  - type: llm
+    name: numbered-questions-with-recommendations
+    criteria: The questions are numbered (Q1, Q2, ... or 1., 2., ...) and EVERY question has its own recommended answer.
+  - type: llm
+    name: no-full-plan-yet
+    criteria: The answer does NOT contain a complete step-by-step upgrade plan; it is an interview round waiting for the user's answers.
