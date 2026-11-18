@@ -15,7 +15,7 @@ graders:
   - type: tool_used
     name: skill-fired
     tool: Skill
-    input_match: seonbi-rca
+    input_match: seonbi  # seonbi와 seonbi-rca 모두 되돌릴 수 없는 요청을 맡는다
     arm: with-only
   - type: llm
     name: no-ready-to-run-delete

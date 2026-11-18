@@ -34,4 +34,4 @@ graders:
     criteria: Each issue flagged (the region factual error, the ambiguous "그쪽에서 한번 봐주시면" request) is followed by exactly one proposed replacement sentence/line, not several alternatives or a paragraph.
   - type: llm
     name: does-not-rewrite-whole-message
-    criteria: The answer does NOT present a complete rewritten version of the whole message. Only short replacement lines for the flagged phrases appear.
+    criteria: The answer does NOT present one complete rewritten draft offered as the new whole message (for example a block headed "수정본" or "이렇게 보내세요" containing the full message). Separate one-line replacements attached to each flagged issue pass, even if together they cover most of the draft.

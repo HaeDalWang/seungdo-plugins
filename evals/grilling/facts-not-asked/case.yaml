@@ -21,7 +21,7 @@ graders:
     arm: with-only
   - type: llm
     name: does-not-ask-current-version
-    criteria: The answer does NOT ask the user what the current EKS cluster version (or addon versions) is; it either states the value found in terraform/eks.tf (1.29) or simply does not ask. Asking "현재 클러스터 버전이 뭔가요?" fails.
+    criteria: The answer states the cluster version found in terraform/eks.tf (1.29) instead of asking the user for it. Asking the user to confirm whether the live cluster still matches the 1.29 in the code (for example because of auto-upgrade or drift) is fine. Fail only if the answer asks for the current version without having stated 1.29 from the file.
   - type: llm
     name: numbered-questions-with-recommendations
     criteria: The questions are numbered (Q1, Q2, ... or 1., 2., ...) and EVERY question has its own recommended answer.

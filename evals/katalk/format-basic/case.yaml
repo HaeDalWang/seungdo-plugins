@@ -4,7 +4,7 @@ description: 관찰한 사실을 주면 코드블록 하나, 3줄 이내, ?? 되
 tags: [katalk]
 execution:
   prompt: |
-    방금 확인한 사실이야. prod VPC에 aws_lb_target_group.web_alb 타겟그룹이 안 보이고, dev에는 같은 이름 web-alb-tg-443이 이미 있어. NLB는 active야. 고객 담당자한테 카톡 뭐라고 보내?
+    방금 확인한 사실이야. 고객 앱 로그에 14:02부터 orders-db:5432 connection timeout이 찍혀. RDS 보안그룹 인바운드에는 10.10.0.0/16만 있고, 어제 새로 만든 앱 서브넷은 10.30.0.0/16이야. 고객 담당자한테 카톡 뭐라고 보내?
   max_turns: 6
   allowed_tools: [Skill]
 runs: 3
@@ -28,7 +28,7 @@ graders:
     pattern: '\?\?'
   - type: llm
     name: fact-first
-    criteria: In the message inside the code block, the first line starts with what was actually observed (for example the target group missing in prod, or the same name existing in dev) before asking or proposing anything.
+    criteria: In the message inside the code block, the first line starts with what was actually observed (for example the connection timeout since 14:02, or the security group allowing only 10.10.0.0/16) before asking or proposing anything.
   - type: llm
     name: no-resource-lecture
-    criteria: The message does not lecture the customer about their own resources or give a multi-sentence explanation or background (for example explaining that target group names must be unique per account). It states observations and asks "is that right?" style questions.
+    criteria: Judge ONLY the message inside the code block; ignore notes to the user outside it. The message does not lecture the customer about their own resources or give multi-sentence background (for example explaining how security groups or VPC CIDRs work). It states observations, asks an "is that right?" style question, and gives at most one short reason and one fix line.
