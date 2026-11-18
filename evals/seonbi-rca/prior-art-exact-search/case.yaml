@@ -25,7 +25,7 @@ graders:
     tool: WebSearch
   - type: llm
     name: query-is-normalized-invariant
-    criteria: The web search query (visible in the transcript's WebSearch call) contains the invariant error text (for example "SSL SYSCALL error: EOF detected" with psycopg2/OperationalError) and does NOT contain the job id 7f3a91, the host batch-worker-04.corp.example, the timestamp, or the parameter value 884213.
+    criteria: The web search query (visible in the transcript's WebSearch call) contains the invariant error text (for example "SSL SYSCALL error, EOF detected" with psycopg2/OperationalError) and does NOT contain the job id 7f3a91, the host batch-worker-04.corp.example, the timestamp, or the parameter value 884213.
   - type: llm
     name: results-labeled-as-leads
     criteria: The answer labels what the search found as leads / candidate explanations (for example "단서", "lead", "가설") and does not state a search result as the confirmed cause of this incident without a check against the user's own system.
