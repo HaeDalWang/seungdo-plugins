@@ -45,8 +45,9 @@ downstream of it wait.
 
 Decisions are the user's: put each one to them and wait.
 
-A recommendation that rests on a fact carries its certainty: `confirmed` (checked this
-session) or `hypothesis` (with the check that settles it).
+Every recommendation that rests on a fact, including one read from a file, ends with its
+certainty: `confirmed` (checked this session; cite the file:line or command) or
+`hypothesis` (with the check that settles it). In Korean write `확인됨` / `추정`.
 
 ## Done
 
