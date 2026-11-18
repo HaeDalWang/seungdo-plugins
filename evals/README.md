@@ -37,3 +37,5 @@ claude plugin eval . --trust-plugin --scaffold --tag <스킬> --ablation none --
 - 정규식은 답의 정상 변형을 막지 않게 넓게 쓴다. 예: `Certainty: 레포 기준 confirmed / 운영 unknown`.
 - 스킬 없이도 통과하는 채점기만 있는 케이스는 스킬 기여가 없다는 뜻이다. 그 스킬 문장은 삭제 후보.
 - `--allow-tools Bash`를 주면 샌드박스 문제로 실행이 0턴에서 실패한다. 읽기 도구만 쓰는 케이스로 설계한다.
+- 케이스의 `allowed_tools: [WebSearch]`만으로는 검색이 막힌다. `seonbi-rca/prior-art-exact-search`는 `--allow-tools WebSearch`를 줘야 잴 수 있다.
+- "~하지 않는다"만 적은 LLM 채점기는 정상 답도 떨어뜨렸다(katalk 전체 재작성 판정, 기준을 고친 뒤에도 0/3). 다른 채점기가 같은 행동을 보면 지운다.
