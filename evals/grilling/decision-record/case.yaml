@@ -1,0 +1,25 @@
+schema_version: "1.1"
+name: grilling-decision-record
+description: 그릴링을 마칠 때 결정마다 이유·버린 대안과 버린 이유·영향 범위를 남겨 나중에 "왜 그렇게 했지"에 답할 수 있게 하는지 본다.
+tags: [grilling]
+execution:
+  prompt: |
+    그릴링 이어서 하자. 지난 라운드 질문과 내 답이야.
+    Q1 휴가 데이터 저장: A. PostgreSQL(RDS) B. DynamoDB → 내 답: A (승인 이력 조회·집계가 많아서)
+    Q2 로그인: A. Google Workspace SSO B. 자체 아이디/비번 → 내 답: A
+    Q3 배포: A. ECS Fargate B. EC2 한 대 → 내 답: B, 80명이라 작게 시작
+    남은 질문은 다음 세션에 할게. 오늘은 여기까지 정한 걸로 마무리해줘.
+  max_turns: 8
+  allowed_tools: [Skill]
+runs: 3
+expected_outcome: |
+  마무리할 때 결정마다 결정·이유·버린 대안과 그 이유·영향 범위를 적은 결정 기록을 준다. 단순 한 줄 목록이 아니다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: grilling
+    arm: with-only
+  - type: llm
+    name: record-has-reason-and-rejected
+    criteria: The closing decision record gives, for EACH of the three decisions (storage, login, deploy), the chosen option, the reason, the rejected alternative together with why it was rejected, and what part of the app it affects. Fail if any decision is only a one-line "chose X" without the rejected alternative and its reason.

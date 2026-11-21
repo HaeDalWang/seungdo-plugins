@@ -32,7 +32,7 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 | [`seonbi`](skills/seonbi/SKILL.md) | 매일 쓰는 답변 점검. **"확인한 거야, 기억한 거야?"** 를 구분하고, 내가 남에게 설명하고 직접 다시 확인할 수 있게 근거를 보여 줌 | 사실·기술·버전 질문, `확실해?`, `근거`, `출처`, `왜` |
 | [`seonbi-rca`](skills/seonbi-rca/SKILL.md) | 진짜 장애용 원인 찾기(RCA). 증상 고정 → 같은 에러 사례 검색 → 가설 2개 이상 → 실제 시스템으로 확인 → 고친 뒤 재확인 | `장애`, `트러블슈팅`, `원인 분석`, `왜 고장 났지`, 운영 변경 전 |
 | [`katalk`](skills/katalk/SKILL.md) | 고객에게 보낼 메신저 답장을 내 말투로 쓰거나, 내가 쓴 초안을 검토 | `카톡`, `뭐라고 보내`, `회신`, `너라면 뭐라고 적을래` |
-| [`grilling`](skills/grilling/SKILL.md) | 계획을 짜기 전에 **빠진 결정을 질문으로 다 꺼냄.** 질문마다 추천 답을 붙여서 "네"만 해도 넘어감 | `질문해줘`, `빠진 거 물어봐`, `따져봐`, SOW·마이그레이션처럼 범위가 모호할 때 |
+| [`grilling`](skills/grilling/SKILL.md) | 계획을 짜기 전에 **빠진 결정을 질문으로 다 꺼냄.** 질문마다 전체 중 무엇을 정하는지·고르면 어떻게 되는지·추천 이유를 쉬운 말로 붙이고, 끝나면 결정 이유를 파일로 남김 | `질문해줘`, `빠진 거 물어봐`, `따져봐`, SOW·마이그레이션처럼 범위가 모호할 때 |
 | [`verification-loop`](skills/verification-loop/SKILL.md) | "다 됐어요" 말하기 전에 프로젝트의 빌드·타입·린트·테스트를 **실제로 돌려서** 증거를 보여 줌 | 기능 완성, PR 직전, 리팩터링 후 |
 | [`github-ops`](skills/github-ops/SKILL.md) | `gh` 명령으로 이슈·PR·CI를 관리. 남이 쓴 PR 내용은 **믿지 않고** 다룸 | `이슈 정리`, `PR 확인`, `CI 깨졌다`, 릴리스 |
 | [`k8s-upgrade-skills`](https://github.com/HaeDalWang/k8s-upgrade-skills) ↗ | Kubernetes 버전 업그레이드를 **단계마다 검문을 통과해야 다음으로** 가는 방식으로 진행 | `EKS 업그레이드`, `K8s 버전 업그레이드` |
@@ -156,7 +156,7 @@ paths:
 |---|---|---|---|
 | `rules/common/simplicity.md` | [ponytail](https://github.com/DietrichGebert/ponytail) 플러그인 | 핵심 규칙을 가져와 다듬음 (MIT) | 같은 규칙이 매번 두 번 들어감. ponytail을 쓸 거면 `simplicity.md`만 빼고 복사 |
 | `seonbi-rca`의 진단 순서 (증상 확인·가설 순위·고친 뒤 재확인) | [mattpocock/skills](https://github.com/mattpocock/skills)의 `diagnosing-bugs` | 아이디어만 얻음, 문장은 새로 씀 | "디버그해 줘"에 진단 방법 두 개가 같이 켜짐. 하나만 쓰세요 |
-| `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills)의 `grilling` | 가져와 수정 (MIT). 바꾼 내용은 [`NOTICE.md`](skills/grilling/NOTICE.md) | 같은 이름 스킬이 두 개 생김 |
+| `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills)의 `grilling` | 가져와 크게 수정 (MIT). 질문 형식·종료 방식이 원본과 다름. 바꾼 내용은 [`NOTICE.md`](skills/grilling/NOTICE.md) | 같은 이름 스킬이 두 개 생김 |
 | `verification-loop`, `github-ops` | [ECC](https://github.com/affaan-m/ECC) | 가져와 수정 (MIT) | 같은 이름 스킬이 두 개 생김 |
 
 `mattpocock/skills`의 나머지(`tdd`, `to-spec` 등)는 여기 없어서 겹치지 않아요.

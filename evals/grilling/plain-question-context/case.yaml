@@ -1,0 +1,33 @@
+schema_version: "1.1"
+name: grilling-plain-question-context
+description: 질문마다 전체 중 무엇을 정하는지, 선택지별 결과, 추천 이유, 되돌리기 어려움을 쉬운 말로 붙이고, 쉽게 되돌릴 사소한 결정은 묻지 않는지 본다.
+tags: [grilling]
+context:
+  scaffold_script: place-files.sh
+execution:
+  prompt: |
+    사내 휴가 신청 웹앱 만들려고 해. 백엔드는 처음이라 잘 몰라. 이 폴더 보고 빠진 거 질문해줘.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+runs: 3
+expected_outcome: |
+  질문마다 이 결정이 전체 앱의 어느 부분을 정하는지 한 줄로 밝히고, 선택지마다 고르면 어떻게 되는지 쉬운 말로 적고,
+  추천에는 이유를 붙이며, 나중에 바꾸기 어려운 결정을 표시한다. 버튼 색·변수명처럼 쉽게 되돌릴 결정은 묻지 않는다.
+graders:
+  - type: tool_used
+    name: skill-fired
+    tool: Skill
+    input_match: grilling
+    arm: with-only
+  - type: llm
+    name: question-states-what-it-decides
+    criteria: EVERY question states, before or in its body, which part of the whole app it decides or affects (for example "this decides how login works for the whole app"). Fail if any question jumps straight to the options without saying what part of the app it settles.
+  - type: llm
+    name: options-in-plain-consequences
+    criteria: For every question with choices, each choice says in plain words what happens if you pick it, readable by someone new to backend work. Jargon (for example ORM, JWT, RDS, SSO) is either avoided or explained in the same sentence. Fail if a choice is only a bare technical term with no consequence, or jargon is left unexplained.
+  - type: llm
+    name: recommendation-has-reason
+    criteria: EVERY recommended answer gives a reason (why this one), not just the pick. Fail if any recommendation is a bare choice.
+  - type: llm
+    name: hard-to-reverse-flagged
+    criteria: The answer marks which decisions are hard to change later (for example data storage, login method) in a way distinguishable from easy ones. Fail if no reversibility distinction appears anywhere.
