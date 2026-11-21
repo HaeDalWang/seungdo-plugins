@@ -46,6 +46,7 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 |---|---|---|
 | [`leak-scan`](agents/leak-scan.md) | 저장소를 공개하거나 push하기 전에 비밀번호·개인정보·회사 내부 이름이 섞여 있는지 검사. 지금 파일**과 git 기록** 둘 다 봄 | 읽기만 |
 | [`shell-diagnose`](agents/shell-diagnose.md) | 빌드·테스트·로그가 실패한 원인을 조사해서 **원인과 고칠 방법만** 짧게 보고 | 읽기만 |
+| [`diff-review`](agents/diff-review.md) | 다른 에이전트가 만든 변경을 **작성 과정을 모르는 채로** 검토. 찾기(find)와 반박 검증(verify)을 따로 돌려 확인된 문제만 남김 | 읽기만 |
 
 플러그인을 설치하면 에이전트도 같이 들어와요.
 
@@ -349,13 +350,18 @@ ECC 스킬은 5주 동안 한 번도 안 쓰였거든요. 그래도 이 둘을 �
 
 ---
 
-### `leak-scan` · `shell-diagnose` — 에이전트
+### `leak-scan` · `shell-diagnose` · `diff-review` — 에이전트
 
-둘 다 **파일을 고칠 권한이 없어요.** 실수가 아니라 일부러 그렇게 만든 거예요.
+셋 다 **파일을 고칠 권한이 없어요.** 실수가 아니라 일부러 그렇게 만든 거예요.
 
 **`shell-diagnose`** 는 긴 빌드 로그나 에러 메시지가 내 대화창을 가득 채우는 걸 막아요.
 안에서 명령을 몇 개 돌리든 돌려주는 건 **원인 / 근거 1~3줄 / 고칠 방법 / 돌린 명령 목록**뿐이에요.
 고칠 줄 알아도 직접 안 고치고 방법만 알려 줘요. 고치는 건 부른 쪽이 해요.
+
+**`diff-review`** 는 다른 에이전트(또는 다른 세션)가 만든 변경을 commit 전에 봐요.
+만든 쪽의 설명은 일부러 안 받고, **원래 하려던 일(의도·완료 조건)과 diff만** 봐요.
+두 단계로 돌려요. `find`가 문제 후보를 최대 10개 내면, 후보마다 새 `verify`가 반박을 시도해서
+`CONFIRMED`만 남겨요. 스타일·원래 있던 문제·린터가 잡을 것은 안 올려요. 헛경보가 리뷰를 쓸모없게 만드니까요.
 
 **`leak-scan`** 은 공개 전 검사관이에요. 원칙 두 개:
 
@@ -389,7 +395,8 @@ seungdo-plugins/
 │   └── github-ops/        # SKILL.md + NOTICE.md (ECC, MIT)
 ├── agents/                # 플러그인이 자동으로 읽는 에이전트
 │   ├── leak-scan.md
-│   └── shell-diagnose.md
+│   ├── shell-diagnose.md
+│   └── diff-review.md
 ├── rules/                 # 플러그인이 아님 — 직접 복사
 │   ├── NOTICE.md          # simplicity.md 출처 (ponytail, MIT)
 │   └── common/
