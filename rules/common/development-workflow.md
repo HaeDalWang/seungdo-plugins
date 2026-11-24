@@ -14,7 +14,8 @@
    dependencies and risks, break into phases before touching code.
    - **Intent first**: if the change is noticeable to users or other systems and
      touches 3+ files, write `intent.md` before planning: Problem / Outcome +
-     success criteria / affected scope and what stays unchanged / constraints /
+     success criteria / affected scope and what stays unchanged /
+     non-goals (what this will not do) / constraints /
      open questions. No how. Ask the user instead of guessing open questions.
    - Skip for typos, version bumps, behavior-preserving refactors, and spikes
      (write it once the direction is clear).
