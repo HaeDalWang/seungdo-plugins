@@ -21,11 +21,6 @@
         "source": "url",
         "url": "https://github.com/HaeDalWang/k8s-upgrade-skills.git"
       },
-      "strict": false,
-      "skills": [
-        "./k8s-upgrade-skills",
-        "./helm-k8s-compat"
-      ],
       "description": "Kubernetes 버전 업그레이드를 phase-gated 방식으로 수행한다. Helm 차트 호환성 사전 점검(helm-k8s-compat) 포함.",
       "category": "devops",
       "homepage": "https://github.com/HaeDalWang/k8s-upgrade-skills"
