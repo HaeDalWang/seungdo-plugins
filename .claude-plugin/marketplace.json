@@ -16,14 +16,14 @@
       "license": "PolyForm-Noncommercial-1.0.0"
     },
     {
-      "name": "k8s-upgrade-skills",
+      "name": "eks-upgrade-skills",
       "source": {
         "source": "url",
-        "url": "https://github.com/HaeDalWang/k8s-upgrade-skills.git"
+        "url": "https://github.com/HaeDalWang/eks-upgrade-skills.git"
       },
-      "description": "Kubernetes 버전 업그레이드를 phase-gated 방식으로 수행한다. Helm 차트 호환성 사전 점검(helm-k8s-compat) 포함.",
+      "description": "Terraform 관리 EKS 버전 업그레이드를 phase-gated 방식으로 수행한다. Helm 차트 호환성 사전 점검(helm-k8s-compat) 포함.",
       "category": "devops",
-      "homepage": "https://github.com/HaeDalWang/k8s-upgrade-skills"
+      "homepage": "https://github.com/HaeDalWang/eks-upgrade-skills"
     }
   ]
 }

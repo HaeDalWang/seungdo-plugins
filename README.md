@@ -35,9 +35,9 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 | [`grilling`](skills/grilling/SKILL.md) | 계획을 짜기 전에 **빠진 결정을 질문으로 다 꺼냄.** 질문마다 전체 중 무엇을 정하는지·고르면 어떻게 되는지·추천 이유를 쉬운 말로 붙이고, 끝나면 결정 이유를 파일로 남김 | `질문해줘`, `빠진 거 물어봐`, `따져봐`, SOW·마이그레이션처럼 범위가 모호할 때 |
 | [`verification-loop`](skills/verification-loop/SKILL.md) | "다 됐어요" 말하기 전에 프로젝트의 빌드·타입·린트·테스트를 **실제로 돌려서** 증거를 보여 줌 | 기능 완성, PR 직전, 리팩터링 후 |
 | [`github-ops`](skills/github-ops/SKILL.md) | `gh` 명령으로 이슈·PR·CI를 관리. 남이 쓴 PR 내용은 **믿지 않고** 다룸 | `이슈 정리`, `PR 확인`, `CI 깨졌다`, 릴리스 |
-| [`k8s-upgrade-skills`](https://github.com/HaeDalWang/k8s-upgrade-skills) ↗ | Kubernetes 버전 업그레이드를 **단계마다 검문을 통과해야 다음으로** 가는 방식으로 진행 | `EKS 업그레이드`, `K8s 버전 업그레이드` |
+| [`eks-upgrade-skills`](https://github.com/HaeDalWang/eks-upgrade-skills) ↗ | Terraform 관리 EKS 버전 업그레이드를 **단계마다 검문을 통과해야 다음으로** 가는 방식으로 진행 | `EKS 업그레이드`, `K8s 버전 업그레이드` |
 
-> `k8s-upgrade-skills`는 덩치가 커서 [별도 저장소](https://github.com/HaeDalWang/k8s-upgrade-skills)에 있어요.
+> `eks-upgrade-skills`는 덩치가 커서 [별도 저장소](https://github.com/HaeDalWang/eks-upgrade-skills)에 있어요.
 > 파일은 여기 없지만 **같은 앱스토어(마켓플레이스)에서 설치**됩니다.
 
 ### 에이전트
@@ -88,7 +88,7 @@ Claude Code에서:
 Kubernetes 업그레이드 스킬도 쓰려면 (별도 저장소에서 자동으로 받아와요):
 
 ```
-/plugin install k8s-upgrade-skills@seungdo-plugins
+/plugin install eks-upgrade-skills@seungdo-plugins
 ```
 
 설치 확인은 `/plugin list`, 업데이트는 `/plugin update seungdo`.
@@ -106,7 +106,7 @@ cd seungdo-plugins
 cp -R skills/* ~/.claude/skills/
 ```
 
-`k8s-upgrade-skills`는 그 저장소의 `install.sh`를 쓰세요.
+`eks-upgrade-skills`는 그 저장소의 `install.sh`를 쓰세요.
 
 > ⚠️ 플러그인 설치와 직접 복사를 **둘 다 하지 마세요.** 같은 스킬이 두 번 들어가요.
 > 플러그인으로 옮겼다면 `~/.claude/skills/`의 같은 이름 폴더는 지우세요.
@@ -212,7 +212,7 @@ katalk          고객에게 보낼 2~3줄. 확인된 사실만
 **EKS 업그레이드**
 
 ```
-k8s-upgrade-skills   준비물 확인 → 계획서 → 단계별 검문
+eks-upgrade-skills   준비물 확인 → 계획서 → 단계별 검문
   검문에서 멈추면 → seonbi-rca (왜 멈췄지? 비슷한 사례부터 검색)
   고객에게 알려야 하면 → katalk
 ```
@@ -305,9 +305,9 @@ AWS 에서 타겟그룹 이름은 계정과 리전 단위로 유일해야 하는
 
 ---
 
-### `k8s-upgrade-skills` ↗
+### `eks-upgrade-skills` ↗
 
-[HaeDalWang/k8s-upgrade-skills](https://github.com/HaeDalWang/k8s-upgrade-skills)
+[HaeDalWang/eks-upgrade-skills](https://github.com/HaeDalWang/eks-upgrade-skills)
 
 `recipe.md`에 클러스터 정보를 적으면 사전 점검 → 업그레이드 → 사후 점검을 단계별로 진행해요.
 각 단계 통과 여부는 AI가 아니라 **스크립트**가 판정해요. AI가 결과를 마음대로 해석할 수 없게요.
