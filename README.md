@@ -252,9 +252,10 @@ Category 2·3(회사 도구 이름, 본인 이메일 등)은 사람마다 달라
 
 ## 라이선스
 
-[PolyForm Noncommercial License 1.0.0](LICENSE) — 개인·공부·회사 업무처럼 **돈 버는 용도가 아니면** 자유롭게 쓰세요. 상업적으로 쓰려면 [저작자](https://github.com/HaeDalWang)에게 물어봐 주세요.
+[MIT](LICENSE). 회사 업무를 포함해 자유롭게 쓰세요.
 
-예외로 MIT인 것들 (원본 라이선스를 따름):
+가져온 부분은 원본의 MIT 고지를 따릅니다:
 
 - `skills/verification-loop/`, `skills/github-ops/` — [ECC](https://github.com/affaan-m/ECC). 고지: 각 폴더의 `NOTICE.md`
+- `skills/grilling/` — [mattpocock/skills](https://github.com/mattpocock/skills). 고지: [`NOTICE.md`](skills/grilling/NOTICE.md)
 - `rules/common/simplicity.md` — [ponytail](https://github.com/DietrichGebert/ponytail). 고지: [`rules/NOTICE.md`](rules/NOTICE.md)
