@@ -1,25 +1,54 @@
 # seungdo-plugins
 
-AI 코딩 도우미(Claude Code)에게 **"일 잘하는 습관"을 심어 주는 설정 모음**입니다.
+AWS·Kubernetes 운영과 고객 응대에서 반복하던 판단과 말투를 Claude Code 스킬·에이전트·룰로 굳힌 모음입니다.
+실제 업무에서 여러 번 써 보고 효과를 본 것만 올립니다. 예외는 ECC에서 가져온 두 스킬이고, [이유](#verification-loop--github-ops--ecc에서-가져온-것)를 따로 적었습니다.
 
-AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판단과 말투가 있었어요.
-그걸 AI가 알아서 따라 하도록 파일로 굳혀 둔 게 이 저장소입니다.
+## 설치
 
-> **한 줄 규칙:** 실제 업무에서 **여러 번 써 보고 효과를 본 것만** 올립니다.
-> 한두 번 써서 괜찮았던 건 아직 안 올려요.
+```
+/plugin marketplace add HaeDalWang/seungdo-plugins
+/plugin install seungdo@seungdo-plugins          # 스킬 6개 + 에이전트 3개
+/plugin install eks-upgrade-skills@seungdo-plugins   # 선택: EKS 업그레이드 (별도 저장소에서 받아옴)
+```
 
----
+업데이트는 `/plugin update seungdo`. 플러그인은 통째로 설치돼요. 일부 스킬만 쓰려면 아래처럼 직접 복사하세요.
 
-## 먼저, 용어 4개
+> 예전 이름으로 설치했다면 지우고 위 명령으로 다시 설치하세요:
+> `seungdo-skills` 마켓플레이스, `seungdo-skills`·`seungdo-devops` 플러그인(스킬은 `seungdo`에 합쳐짐),
+> `k8s-upgrade-skills` 플러그인(→ `eks-upgrade-skills`).
 
-이 README에는 네 가지가 나와요. 스마트폰에 비유하면 쉽습니다.
+### 직접 복사
 
-| 용어 | 비유 | 실제로는 |
-|---|---|---|
-| **스킬** | 필요할 때만 여는 앱 | 특정 상황(예: "근거 있어?")이 오면 AI가 꺼내 읽는 작업 설명서 |
-| **룰** | 폰의 기본 설정 | 대화를 시작할 때마다 **항상** 켜져 있는 지침. 기다리지 않고 늘 적용 |
-| **에이전트** | 심부름 보낸 친구 | 따로 나가서 일을 하고 **결과 요약만** 들고 오는 AI. 내 대화창이 지저분해지지 않음 |
-| **플러그인** | 앱스토어에서 받는 앱 묶음 | 스킬·에이전트를 한 번에 설치·업데이트하는 꾸러미. 이 저장소가 그 앱스토어(마켓플레이스) 역할도 함 |
+```bash
+git clone https://github.com/HaeDalWang/seungdo-plugins.git
+cp -R seungdo-plugins/skills/<이름> ~/.claude/skills/
+```
+
+`eks-upgrade-skills`는 [그 저장소의 설치 절](https://github.com/HaeDalWang/eks-upgrade-skills#2-설치)을 따르세요.
+
+> ⚠️ 플러그인 설치와 직접 복사를 **둘 다 하지 마세요.** 같은 스킬이 두 번 들어가요.
+> 플러그인으로 옮겼다면 `~/.claude/skills/`의 같은 이름 폴더는 지우세요.
+
+### 룰 (항상 직접 복사)
+
+플러그인에는 룰 칸이 없어서([plugins reference](https://code.claude.com/docs/en/plugins-reference)) 룰은 복사합니다.
+
+```bash
+cp -R seungdo-plugins/rules/common ~/.claude/rules/
+```
+
+기존 `~/.claude/rules/common/`이 있으면 같은 이름 파일만 덮어써요. 룰은 복사본이라 플러그인 업데이트로 갱신되지 않아요. `git pull` 후 다시 복사하세요.
+
+`coding-style`·`testing`·`security`는 `paths` frontmatter가 있어 코드 파일(`security`는 IaC·YAML·`.env`도)을 열 때만 켜지고, 나머지는 항상 켜져요.
+
+### 다른 AI 도구
+
+복사본 대신 원본을 가리키게 하면 원본 하나만 고쳐도 돼요.
+
+| 도구 | 방법 |
+|---|---|
+| Kiro CLI | `~/.kiro/steering/`에 룰 파일 symlink, `~/.kiro/skills/`에 스킬 폴더 symlink. steering에서는 `paths`가 없어 세 룰도 항상 켜져요(`inclusion: always`) |
+| Codex CLI | 스킬은 `~/.agents/skills/`에 symlink. 전역 지시는 `~/.codex/AGENTS.md` 파일 하나만 읽으므로 룰을 이어 붙여 만들고, 원본을 고치면 다시 만들어야 해요 |
 
 ---
 
@@ -27,162 +56,61 @@ AWS·Kubernetes 운영과 고객 응대를 하면서 매번 똑같이 하던 판
 
 ### 스킬
 
-| 스킬 | 하는 일 | 이럴 때 켜져요 |
+| 스킬 | 하는 일 | 켜지는 말 |
 |---|---|---|
-| [`seonbi`](skills/seonbi/SKILL.md) | 매일 쓰는 답변 점검. **"확인한 거야, 기억한 거야?"** 를 구분하고, 내가 남에게 설명하고 직접 다시 확인할 수 있게 근거를 보여 줌 | 사실·기술·버전 질문, `확실해?`, `근거`, `출처`, `왜` |
-| [`seonbi-rca`](skills/seonbi-rca/SKILL.md) | 진짜 장애용 원인 찾기(RCA). 증상 고정 → 같은 에러 사례 검색 → 가설 2개 이상 → 실제 시스템으로 확인 → 고친 뒤 재확인 | `장애`, `트러블슈팅`, `원인 분석`, `왜 고장 났지`, 운영 변경 전 |
-| [`katalk`](skills/katalk/SKILL.md) | 고객에게 보낼 메신저 답장을 내 말투로 쓰거나, 내가 쓴 초안을 검토 | `카톡`, `뭐라고 보내`, `회신`, `너라면 뭐라고 적을래` |
-| [`grilling`](skills/grilling/SKILL.md) | 계획을 짜기 전에 **빠진 결정을 질문으로 다 꺼냄.** 질문마다 전체 중 무엇을 정하는지·고르면 어떻게 되는지·추천 이유를 쉬운 말로 붙이고, 끝나면 결정 이유를 파일로 남김 | `질문해줘`, `빠진 거 물어봐`, `따져봐`, SOW·마이그레이션처럼 범위가 모호할 때 |
-| [`verification-loop`](skills/verification-loop/SKILL.md) | "다 됐어요" 말하기 전에 프로젝트의 빌드·타입·린트·테스트를 **실제로 돌려서** 증거를 보여 줌 | 기능 완성, PR 직전, 리팩터링 후 |
-| [`github-ops`](skills/github-ops/SKILL.md) | `gh` 명령으로 이슈·PR·CI를 관리. 남이 쓴 PR 내용은 **믿지 않고** 다룸 | `이슈 정리`, `PR 확인`, `CI 깨졌다`, 릴리스 |
-| [`eks-upgrade-skills`](https://github.com/HaeDalWang/eks-upgrade-skills) ↗ | Terraform 관리 EKS 버전 업그레이드를 **단계마다 검문을 통과해야 다음으로** 가는 방식으로 진행 | `EKS 업그레이드`, `K8s 버전 업그레이드` |
+| [`seonbi`](skills/seonbi/SKILL.md) | 매일 쓰는 답변 점검. 확인한 것과 기억한 것을 나누고, 남에게 설명하고 다시 확인할 수 있게 근거를 붙임 | 사실·기술·버전 질문, `확실해?`, `근거`, `출처`, `왜` |
+| [`seonbi-rca`](skills/seonbi-rca/SKILL.md) | 장애 원인 찾기. 증상 고정 → 같은 에러 사례 검색 → 가설 2개 이상 → 실제 시스템으로 확인 → 고친 뒤 재확인 | `장애`, `트러블슈팅`, `원인 분석`, 운영 변경 전 |
+| [`katalk`](skills/katalk/SKILL.md) | 고객에게 보낼 메신저 답장을 저자 말투로 쓰거나 초안을 검토 | `카톡`, `뭐라고 보내`, `회신` |
+| [`grilling`](skills/grilling/SKILL.md) | 계획 전에 빠진 결정을 질문으로 꺼냄. 질문마다 추천 답과 이유, 끝나면 결정 기록 | `질문해줘`, `빠진 거 물어봐`, `따져봐` |
+| [`verification-loop`](skills/verification-loop/SKILL.md) | "다 됐어요" 전에 프로젝트의 빌드·타입·린트·테스트를 실제로 돌려 증거를 보임 | 기능 완성, PR 직전, 리팩터링 후 |
+| [`github-ops`](skills/github-ops/SKILL.md) | `gh`로 이슈·PR·CI 관리. 남이 쓴 PR·이슈 내용은 신뢰하지 않음 | `이슈 정리`, `PR 확인`, `CI 깨졌다` |
+| [`eks-upgrade-skills`](https://github.com/HaeDalWang/eks-upgrade-skills) ↗ | Terraform 관리 EKS를 한 버전씩, 단계마다 스크립트 게이트를 통과해야 다음으로 가는 방식으로 업그레이드 (별도 저장소, 같은 마켓플레이스) | `EKS 업그레이드` |
 
-> `eks-upgrade-skills`는 덩치가 커서 [별도 저장소](https://github.com/HaeDalWang/eks-upgrade-skills)에 있어요.
-> 파일은 여기 없지만 **같은 앱스토어(마켓플레이스)에서 설치**됩니다.
+### 에이전트 (전부 읽기 전용)
 
-### 에이전트
-
-| 에이전트 | 하는 일 | 권한 |
-|---|---|---|
-| [`leak-scan`](agents/leak-scan.md) | 저장소를 공개하거나 push하기 전에 비밀번호·개인정보·회사 내부 이름이 섞여 있는지 검사. 지금 파일**과 git 기록** 둘 다 봄 | 읽기만 |
-| [`shell-diagnose`](agents/shell-diagnose.md) | 빌드·테스트·로그가 실패한 원인을 조사해서 **원인과 고칠 방법만** 짧게 보고 | 읽기만 |
-| [`diff-review`](agents/diff-review.md) | 다른 에이전트가 만든 변경을 **작성 과정을 모르는 채로** 검토. 찾기(find)와 반박 검증(verify)을 따로 돌려 확인된 문제만 남김 | 읽기만 |
-
-플러그인을 설치하면 에이전트도 같이 들어와요.
+| 에이전트 | 하는 일 |
+|---|---|
+| [`leak-scan`](agents/leak-scan.md) | 공개·push 전에 비밀값·개인정보·회사 내부 이름을 작업 트리**와 git 기록**에서 검사 |
+| [`shell-diagnose`](agents/shell-diagnose.md) | 빌드·테스트·로그 실패를 조사해 원인과 고칠 방법만 짧게 보고 |
+| [`diff-review`](agents/diff-review.md) | 다른 에이전트가 만든 diff를 작성 과정을 모르는 채로 검토. find와 verify를 나눠 확인된 문제만 남김 |
 
 ### 룰
 
-`~/.claude/rules/`에 넣어 두면 모든 프로젝트에 적용됩니다. `coding-style`·`testing`·`security`는
-코드 파일(`security`는 IaC·YAML·`.env`도)을 열 때만 켜지고, 나머지는 항상 켜져 있어요.
-Kiro steering으로 쓰면 셋 다 항상 켜져요(`inclusion: always`).
-
 | 룰 | 한마디로 |
 |---|---|
-| [`working-with-me.md`](rules/common/working-with-me.md) | **내가 일하는 방식.** 품질 먼저, 비용은 그다음. 확신도를 확인됨/추정/모름으로 밝힘. 확인 안 된 근거로 되돌릴 수 없는 작업은 하지 않음 |
-| [`simplicity.md`](rules/common/simplicity.md) | **최소한으로 만들기.** 꼭 필요한가 → 이미 있나 → 기본 기능으로 되나 → 한 줄로 되나, 순서로 따져 봄. 버그는 증상 말고 원인을 고침. 요청과 상관없는 코드는 건드리지 않음 |
-| [`coding-style.md`](rules/common/coding-style.md) | 데이터를 직접 고치지 말고 새로 만들기(불변성), 에러 처리·입력 검증, 이름 짓기, 파일은 800줄까지, 리뷰 심각도 4단계 |
-| [`development-workflow.md`](rules/common/development-workflow.md) | 새로 짜기 전에 남이 만든 것부터 찾기 → 계획 → 테스트(맞을 때만) → 검증. 3파일 넘는 변경은 계획 전에 **무엇을·왜·성공 기준**만 적은 `intent.md`부터 씀(방법은 안 씀) |
-| [`git-workflow.md`](rules/common/git-workflow.md) | 커밋 메시지 형식, PR 쓸 때 전체 커밋 기록 보기 |
-| [`security.md`](rules/common/security.md) | 커밋 전 보안 체크리스트, 비밀값 관리, 사고 났을 때 순서 |
-| [`testing.md`](rules/common/testing.md) | 복잡한 로직엔 **실행 가능한 확인 하나**만. 테스트가 실패하면 테스트 말고 코드를 고침 |
+| [`working-with-me.md`](rules/common/working-with-me.md) | 품질 먼저, 비용은 그다음. 확신도를 확인됨/추정/모름으로 밝힘. 확인 안 된 근거로 되돌릴 수 없는 작업은 하지 않음 |
+| [`simplicity.md`](rules/common/simplicity.md) | 꼭 필요한가 → 이미 있나 → 기본 기능으로 되나 → 한 줄로 되나 순서로 최소한만. 버그는 원인을 고침 |
+| [`coding-style.md`](rules/common/coding-style.md) | 불변성, 에러 처리·입력 검증, 이름 짓기, 파일 800줄 제한, 리뷰 심각도 4단계 |
+| [`development-workflow.md`](rules/common/development-workflow.md) | 찾기 → 계획 → 테스트(맞을 때만) → 검증. 3파일 넘는 변경은 `intent.md`(무엇을·왜·성공 기준)부터 |
+| [`git-workflow.md`](rules/common/git-workflow.md) | 커밋 메시지 형식, PR은 전체 커밋 기록 기준 |
+| [`security.md`](rules/common/security.md) | 커밋 전 보안 체크리스트, 비밀값 관리, 사고 대응 순서 |
+| [`testing.md`](rules/common/testing.md) | 복잡한 로직엔 실행 가능한 확인 하나. 테스트가 실패하면 코드를 고침 |
 
-> **룰은 플러그인으로 설치되지 않아요.** Claude Code 플러그인에는 "룰" 칸이 없거든요
-> ([plugins reference](https://code.claude.com/docs/en/plugins-reference)). 그래서 룰만 직접 복사합니다.
+`simplicity.md`는 [ponytail](https://github.com/DietrichGebert/ponytail)(MIT) 4.10.0의 핵심 규칙을 가져와 다듬은 것입니다. 출처는 [`rules/NOTICE.md`](rules/NOTICE.md).
 
-> `simplicity.md`는 [ponytail](https://github.com/DietrichGebert/ponytail)(MIT) 4.10.0의 핵심 규칙을
-> 가져와 다듬은 거예요. 플러그인 없이 파일 하나로 같은 효과를 냅니다. 출처는 [`rules/NOTICE.md`](rules/NOTICE.md).
+### 다른 플러그인과 겹치는 것
 
----
-
-## 설치
-
-### 플러그인으로 설치 (추천)
-
-Claude Code에서:
-
-```
-/plugin marketplace add HaeDalWang/seungdo-plugins
-/plugin install seungdo@seungdo-plugins
-```
-
-Kubernetes 업그레이드 스킬도 쓰려면 (별도 저장소에서 자동으로 받아와요):
-
-```
-/plugin install eks-upgrade-skills@seungdo-plugins
-```
-
-설치 확인은 `/plugin list`, 업데이트는 `/plugin update seungdo`.
-
-> 예전 이름(`seungdo-skills` 마켓플레이스, `seungdo-skills`·`seungdo-devops` 플러그인)으로 설치했다면
-> 지우고 위 명령으로 다시 설치하세요. `seungdo-devops`의 스킬 두 개는 `seungdo`에 합쳐졌어요.
-
-### 직접 복사해서 설치
-
-플러그인을 안 쓰거나, Claude Code 말고 다른 AI 도구에 넣을 때:
-
-```bash
-git clone https://github.com/HaeDalWang/seungdo-plugins.git
-cd seungdo-plugins
-cp -R skills/* ~/.claude/skills/
-```
-
-`eks-upgrade-skills`는 그 저장소의 `install.sh`를 쓰세요.
-
-> ⚠️ 플러그인 설치와 직접 복사를 **둘 다 하지 마세요.** 같은 스킬이 두 번 들어가요.
-> 플러그인으로 옮겼다면 `~/.claude/skills/`의 같은 이름 폴더는 지우세요.
-
-### 룰 설치 (항상 직접 복사)
-
-복사만 하면 끝이에요. `~/.claude/rules/` 아래에 있는 `.md` 파일은 하위 폴더까지 자동으로 읽힙니다.
-
-```bash
-git clone https://github.com/HaeDalWang/seungdo-plugins.git
-cp -R seungdo-plugins/rules/common ~/.claude/rules/
-```
-
-몇 개만 고르려면:
-
-```bash
-mkdir -p ~/.claude/rules/common
-cp seungdo-plugins/rules/common/{security,testing}.md ~/.claude/rules/common/
-```
-
-- 한 프로젝트에만 쓰고 싶으면 → 그 프로젝트의 `.claude/rules/`에 넣기
-- 특정 파일을 만질 때만 켜지게 하려면 → 파일 맨 위에 `paths`를 적기
-
-```markdown
----
-paths:
-  - "src/**/*.{ts,tsx}"
----
-```
-
-`paths`가 없으면 항상 켜지고, 있으면 그 경로의 파일을 읽을 때만 켜져요.
-
-### Claude Code 말고 다른 AI 도구에서도
-
-룰과 스킬은 그냥 Markdown 파일이라 다른 도구에서도 쓸 수 있어요. **복사본을 만들지 말고 원본을 가리키게** 하면, 원본 하나만 고쳐도 전부 같이 바뀝니다.
-
-| 도구 | 방법 |
-|---|---|
-| Kiro CLI | `~/.kiro/steering/`에 룰 파일 **symlink**, `~/.kiro/skills/`에 스킬 폴더 symlink |
-| Codex CLI | 스킬은 `~/.agents/skills/`에 symlink. 전역 지시는 `~/.codex/AGENTS.md` **파일 하나**만 읽어서 symlink로 묶을 수 없음. 룰을 이어 붙여 그 파일을 만들고, 원본을 고치면 다시 만들어야 함 |
-
-### 다른 플러그인과 겹치지 않게
-
-이 저장소의 일부는 아래 프로젝트에서 가져오거나 아이디어를 얻었어요. **같은 일을 하는 건 하나만 설치하세요.**
-둘 다 깔면 같은 지시가 두 번 들어가거나, 같은 상황에서 서로 다른 방법끼리 부딪혀요.
+같은 일을 하는 건 하나만 설치하세요. 둘 다 깔면 같은 지시가 두 번 들어가거나 서로 다른 방법이 부딪혀요.
 
 | 이 저장소 | 겹치는 외부 프로젝트 | 관계 | 둘 다 깔면 |
 |---|---|---|---|
-| `rules/common/simplicity.md` | [ponytail](https://github.com/DietrichGebert/ponytail) 플러그인 | 핵심 규칙을 가져와 다듬음 (MIT) | 같은 규칙이 매번 두 번 들어감. ponytail을 쓸 거면 `simplicity.md`만 빼고 복사 |
-| `seonbi-rca`의 진단 순서 (증상 확인·가설 순위·고친 뒤 재확인) | [mattpocock/skills](https://github.com/mattpocock/skills)의 `diagnosing-bugs` | 아이디어만 얻음, 문장은 새로 씀 | "디버그해 줘"에 진단 방법 두 개가 같이 켜짐. 하나만 쓰세요 |
-| `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills)의 `grilling` | 가져와 크게 수정 (MIT). 질문 형식·종료 방식이 원본과 다름. 바꾼 내용은 [`NOTICE.md`](skills/grilling/NOTICE.md) | 같은 이름 스킬이 두 개 생김 |
-| `verification-loop`, `github-ops` | [ECC](https://github.com/affaan-m/ECC) | 가져와 수정 (MIT) | 같은 이름 스킬이 두 개 생김 |
-
-`mattpocock/skills`의 나머지(`tdd`, `to-spec` 등)는 여기 없어서 겹치지 않아요.
+| `rules/common/simplicity.md` | [ponytail](https://github.com/DietrichGebert/ponytail) 플러그인 | 핵심 규칙을 가져와 다듬음 (MIT) | 같은 규칙이 두 번. ponytail을 쓸 거면 `simplicity.md`만 빼고 복사 |
+| `seonbi-rca`의 진단 순서 | [mattpocock/skills](https://github.com/mattpocock/skills)의 `diagnosing-bugs` | 아이디어만 얻음, 문장은 새로 씀 | "디버그해 줘"에 진단 방법 두 개가 같이 켜짐 |
+| `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills)의 `grilling` | 가져와 크게 수정 (MIT). 바꾼 내용은 [`NOTICE.md`](skills/grilling/NOTICE.md) | 같은 이름 스킬이 두 개 |
+| `verification-loop`, `github-ops` | [ECC](https://github.com/affaan-m/ECC) | 가져와 수정 (MIT) | 같은 이름 스킬이 두 개 |
 
 ---
 
-## 같이 쓰면 더 좋은 조합
+## 같이 쓰는 도구와 조합
 
-### 핵심: `seonbi`가 항상 먼저
+`seonbi`·`seonbi-rca`가 근거를 직접 조회할 때 쓰는 도구예요. 따로 있는 프로젝트라 각자 설치하세요.
 
-고객에게 메시지를 보내기 전에 `seonbi`가 **"이 내용, 이번에 직접 확인한 거 맞아?"** 를 먼저 걸러요.
-확인 안 된 추측을 고객에게 확실한 것처럼 보내는 게, 실무에서 제일 비싼 실수거든요.
-
-### 저장소 밖에서 같이 쓰는 도구
-
-`seonbi`는 검색 도구가 있어야 제 실력이 나와요. 숙제 검사하는 선생님한테 교과서가 있어야 하는 것처럼요.
-
-| 도구 | 종류 | 원본 | 왜 같이 쓰나 |
-|---|---|---|---|
-| **exa** | MCP | [exa-labs/exa-mcp-server](https://github.com/exa-labs/exa-mcp-server) | 비슷한 사례·개념을 넓게 찾을 때. 정확한 에러 문구 검색은 키워드 검색이나 `gh`가 더 맞아서, 없어도 `seonbi`는 돌아가요 |
-| **context7** | MCP | [upstash/context7](https://github.com/upstash/context7) | 라이브러리 문서를 **그 버전 기준으로** 가져옴. 기억이 아니라 문서에서 |
-| **AWS MCP** | 플러그인 | [aws/agent-toolkit-for-aws](https://github.com/aws/agent-toolkit-for-aws) | 지금 돌아가는 AWS 상태를 직접 조회. "실제 시스템이 문서보다 우선"의 그 실제 시스템 |
-| **eli5** | 스킬 | [DreambigOu/ELI5](https://github.com/DreambigOu/ELI5) | 같은 내용을 듣는 사람 수준에 맞춰 다시 설명. 비개발자 담당자·임원 보고용 |
-
-넷 다 **따로 있는 프로젝트**예요. 각자 설치하면 돼요.
+| 도구 | 종류 | 왜 |
+|---|---|---|
+| [exa](https://github.com/exa-labs/exa-mcp-server) | MCP | 비슷한 사례·개념을 넓게 찾을 때. 정확한 에러 문구는 `gh` 검색이 더 맞아서 없어도 돼요 |
+| [context7](https://github.com/upstash/context7) | MCP | 라이브러리 문서를 그 버전 기준으로 |
+| [AWS MCP](https://github.com/aws/agent-toolkit-for-aws) | 플러그인 | 지금 돌아가는 AWS 상태를 직접 조회 |
+| [eli5](https://github.com/DreambigOu/ELI5) | 스킬 | 듣는 사람 수준에 맞춰 다시 설명 |
 
 ```bash
 claude mcp add --transport http exa https://mcp.exa.ai/mcp
@@ -194,228 +122,131 @@ claude mcp add context7 -- npx -y @upstash/context7-mcp
 /plugin install aws-core@agent-toolkit-for-aws
 ```
 
-### 이렇게 씁니다
-
-**장애가 났을 때** (제일 자주 씀)
+**장애**
 
 ```
 seonbi-rca      에러 메시지부터 정확히 적어 둠
-  ├ gh / 검색    남들도 똑같이 겪었나? 공식 저장소 이슈부터 (이미 "fixed in X"로 해결된 경우가 많음)
-  ├ AWS MCP     내 환경은 실제로 어떤 상태지? — 추측 말고 조회
-  └ context7    그 버전 공식 문서는 뭐라고 하지?
+  ├ gh / 검색    공식 저장소 이슈부터 (이미 "fixed in X"인 경우가 많음)
+  ├ AWS MCP     내 환경의 실제 상태 조회
+  └ context7    그 버전 공식 문서
       ↓
-    확인된 것만 결론으로 → 답 끝에 출처 / 확신도 / 확인 방법 한 줄
+    확인된 것만 결론으로 → 출처 / 확신도 / 확인 방법 한 줄
       ↓
 katalk          고객에게 보낼 2~3줄. 확인된 사실만
 ```
 
-**EKS 업그레이드**
+**EKS 업그레이드**: `eks-upgrade-skills`가 게이트에서 멈추면 `seonbi-rca`로 원인을 찾고, 고객에게 알릴 땐 `katalk`.
 
-```
-eks-upgrade-skills   준비물 확인 → 계획서 → 단계별 검문
-  검문에서 멈추면 → seonbi-rca (왜 멈췄지? 비슷한 사례부터 검색)
-  고객에게 알려야 하면 → katalk
-```
-
-**비개발자에게 설명할 때**
-
-```
-seonbi   먼저 사실 확정 (틀린 걸 쉽게 설명하면 더 나쁨)
-  → eli5     듣는 사람 수준으로 다시 씀
-  → katalk   메신저 길이로 줄임
-```
-
-순서가 중요해요. **틀린 내용을 쉽게 풀어 쓰는 것**이 어렵게 쓴 틀린 답보다 더 큰 문제를 만들거든요.
+**비개발자에게 설명**: `seonbi`로 사실 확정 → `eli5`로 수준 맞춤 → `katalk`으로 길이 줄임. 틀린 내용을 쉽게 풀어 쓰는 게 제일 나쁘니 순서가 중요해요.
 
 ---
 
 ## 하나씩 자세히
 
-### `seonbi` — 선비 (매일 쓰기)
+### `seonbi` — 매일 쓰는 답변 점검
 
-> 목표: 답을 믿는 게 아니라 **납득하게** 하기. 납득은 두 가지예요: 답을 읽고 **남에게 내 말로 설명할 수 있고**, 근거를 **내가 직접 다시 확인할 수 있는** 상태.
+목표는 답을 믿게 하는 게 아니라 **납득하게** 하는 것: 남에게 내 말로 설명할 수 있고, 근거를 직접 다시 확인할 수 있는 상태.
 
-AI가 내는 답 중에 제일 위험한 건 **"자신 있게 말한 틀린 답"** 이에요. 특히 기억에만 있는 내용을 "공식 문서에 따르면~"처럼 출처가 있는 척 말하는 것. 그래서 seonbi는 이렇게 답하게 해요.
+1. **질문 고정:** 무엇에 답하는지 한 줄로. 두 가지로 읽히면 되물음.
+2. **필요할 때만 근거 확인:** 버전마다 다른 내용, 최근 바뀌었을 수 있는 내용, 문서·설정값 인용, 운영 변경, "확실해?"라고 물은 것만. 나머지는 기억으로 답하고 그렇게 표시. 실제 동작은 시스템 조회, 사양은 그 버전 문서, "이미 고쳐진 버그인가"는 그 프로젝트 이슈·릴리스.
+3. **쓰기:** 결론 한 문장 → 왜(그대로 남에게 말할 수 있는 문장) → 근거마다 재확인 방법 → 가장 약한 고리 → 다른 답이 왜 아닌지 한 줄.
+4. **확신도:** "아마" 금지. **확인됨 / 추정 / 모름** 중 하나.
 
-1. **질문 고정:** 무엇에 답하는지 한 줄로. 두 가지로 읽히면 되물어요.
-2. **필요할 때만 근거 확인:** 버전마다 다른 내용, 최근에 바뀌었을 수 있는 내용, 문서·설정값 인용, 운영 시스템 변경, "확실해?"라고 물은 것만 확인해요. 나머지는 기억으로 답하고 `recall, unverified`로 표시해요. 도구보다 방법이 먼저예요: 실제 동작은 시스템을 직접 조회, 사양은 그 버전 공식 문서, "이미 고쳐진 버그인가"는 그 프로젝트의 이슈·릴리스.
-3. **납득되게 쓰기:** 결론 한 문장 → 왜 그런지(팀장·고객에게 그대로 말할 수 있는 문장) → 근거마다 다시 확인하는 방법(URL이나 읽기 전용 명령) → **가장 약한 고리**(추정에 기댄 부분) → 다른 답이 있었다면 왜 아닌지 한 줄.
-4. **확신도:** "아마", "~인 것 같아요" 금지. **확인됨 / 추정 / 모름** 중 하나. "모르겠어요"는 통과, 근거 없이 단정하면 탈락.
-
-모든 기술 답변 끝에는 이런 한 줄이 붙어요:
+기술 답변 끝에 붙는 줄:
 
 ```
 Source: <URL 또는 명령> (<버전/날짜>) | Certainty: confirmed | Verify: <확인 명령>
 ```
 
-**딱 하나 무조건 멈추는 경우:** 확인 안 된 근거로 **되돌릴 수 없는 작업**(데이터 삭제, 되돌릴 방법 없는 운영 변경)을 하려고 할 때. 추측도 제안도 안 하고, 확인 방법만 알려 주고 멈춰요.
+**무조건 멈추는 경우 하나:** 확인 안 된 근거로 되돌릴 수 없는 작업을 하려 할 때. 확인 방법만 알려 주고 멈춤.
 
-### `seonbi-rca` — 선비 RCA (진짜 장애용)
+### `seonbi-rca` — 장애용
 
-장애, 원인 모를 에러, "왜 고장 났지"일 때 써요. 몇 분이 걸리는 무거운 절차라서 매일 쓰는 seonbi와 나눴어요. 결론은 seonbi와 같은 형식(결론 → 왜 → 다시 확인 → 약한 고리 + 출처 한 줄)으로 내요.
+몇 분 걸리는 무거운 절차라 `seonbi`와 나눴어요. 결론 형식은 `seonbi`와 같아요.
 
-1. **증상 확인:** 증상을 보여 주는 읽기 전용 명령 하나를 먼저 돌려 기록해요.
-2. **사례 검색 (건너뛸 수 없음):** 에러 메시지에서 매번 바뀌는 부분(ID·경로·시간)을 지우고, **문구가 그대로 일치하는 검색**으로 그 프로젝트 이슈부터 찾아요(`gh search issues`). 못 찾았어도 "무엇을 검색했고 없었다"를 남겨요.
-3. **가설 2개 이상:** 각각에 *"X가 원인이면 이걸 확인했을 때 Y가 보일 것"* 이라는 예측을 붙여요.
-4. **확인하기:** 검색으로 찾은 건 **단서**지 증거가 아니에요. 실제 시스템과 그 버전 문서·소스로 확인해요. **버린 가설과 버린 이유**도 남겨요. 납득은 대개 여기서 와요.
-5. **운영 변경 전:** 되돌리기 쉬운 순서로 제안하고, 영향 범위와 롤백을 적고, 권한이 다르면 누가 무엇을 하는지 나눠요.
-6. **고친 뒤 재확인:** 1번 명령을 다시 돌려 증상이 사라진 걸 봐야 "고쳤다"고 말해요. 세 번 고쳐도 안 되면 멈추고 설계를 의심해요.
+1. **증상 확인:** 증상을 보여 주는 읽기 전용 명령 하나를 먼저 돌려 기록.
+2. **사례 검색 (생략 불가):** 에러에서 바뀌는 부분(ID·경로·시간)을 지우고 문구 그대로 그 프로젝트 이슈부터(`gh search issues`). 못 찾아도 무엇을 검색했는지 남김.
+3. **가설 2개 이상:** 각각 "X가 원인이면 이걸 확인했을 때 Y가 보일 것" 예측을 붙임.
+4. **확인:** 검색 결과는 단서일 뿐. 실제 시스템과 그 버전 문서·소스로 확인하고, 버린 가설과 이유도 남김.
+5. **운영 변경 전:** 되돌리기 쉬운 순서로 제안, 영향 범위와 롤백, 권한이 다르면 역할 분리.
+6. **고친 뒤 재확인:** 1번 명령으로 증상이 사라진 걸 봐야 "고쳤다". 세 번 고쳐도 안 되면 멈추고 설계를 의심.
 
 (1·3·6번은 [mattpocock/skills](https://github.com/mattpocock/skills)의 `diagnosing-bugs`에서 아이디어를 얻었어요.)
 
-<details>
-<summary>왜 만들었나</summary>
+### `katalk` — 고객 메신저 회신
 
-팀장님의 리뷰 기준을 스킬로 옮긴 거예요. 목적은 똑똑해 **보이는** 게 아니라,
-틀린 답이 나갔을 때 **틀렸다는 게 먼저 보이는 것**이에요.
-</details>
-
----
-
-### `katalk` — 카톡
-
-고객 담당자에게 메신저로 **그대로 복사해서 보낼** 짧은 메시지를 써요.
-티켓 답장이나 첨부 문서처럼 긴 글은 대상이 아니에요.
+고객 담당자에게 그대로 복사해 보낼 짧은 메시지용. 티켓 답장처럼 긴 글은 대상이 아니에요. 말투는 저자 기준이라, 내 말투로 바꾸려면 [`SKILL.md`](skills/katalk/SKILL.md)의 형식과 예시를 고치세요.
 
 ```
 [내가 확인한 사실] + [되묻기 ~인가요??]
 [이유 한 줄] + [해결책 한 줄 ~하시면 됩니다!]
 ```
 
-- **2~3줄.** 더 늘리지 않아요
-- **사실 먼저.** 이번에 직접 본 것만
-- **되묻기.** 단정하지 않아요. 고객 시스템은 고객이 더 잘 아니까요
-- **해결책은 복붙 가능하게.** 리소스 이름, 주소, 설정값을 그대로
+- **2~3줄.** 사실 먼저, 이번에 직접 본 것만.
+- **되묻기.** 고객 시스템은 고객이 더 잘 아니까 단정하지 않음.
+- **해결책은 복붙 가능하게.** 리소스 이름, 주소, 설정값 그대로.
 
-실제로 한 번에 원인을 찾아낸 메시지:
+예시:
 
 ```
 혹시 apply 출력에 aws_lb_target_group.traefik_alb 에러 나있나요?? 지금 NLB는 active인데 NLB→ALB 타겟그룹이 prod VPC에 안보여서요
 dev 쪽에 같은 이름(traefik-alb-tg-443/80/8000)이 이미 있어서 이름 겹치면 DuplicateTargetGroupName 날 수 있어서 그때는 name에 ${local.env} 넣으시면 됩니다!
 ```
 
-같은 내용을 보고서처럼 쓰면 이렇게 돼요. 단정하고, 길고, 고객이 이미 아는 걸 설명하죠:
+같은 내용을 보고서처럼 쓰면 단정하고, 길고, 고객이 이미 아는 걸 설명하게 돼요:
 
 ```
 검토해본 결과 타겟그룹 생성 단계에서 문제가 발생한 것으로 판단됩니다.
 AWS 에서 타겟그룹 이름은 계정과 리전 단위로 유일해야 하는데 ...
 ```
 
-초안을 주고 "검토해 줘"라고 하면 **파일은 안 고치고** 🔴 사실 오류 / 🟡 오해할 만한 부분 / 🟢 오타 순서로 짚어만 줘요.
-
----
+초안을 주고 "검토해 줘"라고 하면 파일은 안 고치고 🔴 사실 오류 / 🟡 오해 소지 / 🟢 오타 순서로 짚어요.
 
 ### `eks-upgrade-skills` ↗
 
-[HaeDalWang/eks-upgrade-skills](https://github.com/HaeDalWang/eks-upgrade-skills)
+[HaeDalWang/eks-upgrade-skills](https://github.com/HaeDalWang/eks-upgrade-skills). Terraform으로 관리하는 EKS 클러스터를 업그레이드해요.
+`recipe.md`가 없으면 클러스터를 탐색하고 한 번 물어본 뒤 만들고, 계획서를 승인받아 단계별로 진행해요.
+각 단계 통과 여부는 AI가 아니라 **스크립트의 exit code**가 판정해요.
 
-`recipe.md`에 클러스터 정보를 적으면 사전 점검 → 업그레이드 → 사후 점검을 단계별로 진행해요.
-각 단계 통과 여부는 AI가 아니라 **스크립트**가 판정해요. AI가 결과를 마음대로 해석할 수 없게요.
+- 버전은 한 칸씩만 (1.33 → 1.35 거부). 컨트롤 플레인 먼저, 노드가 앞서지 않음
+- PDB를 강제로 뚫지 않음
+- 승인은 `승인`/`확인`/`시작`만 통과 ("진행해줘", "ㅇㅇ"는 승인 아님)
+- 예상 못 한 오류 → 멈추고 사람 판단을 기다림
 
-- 버전은 **한 칸씩만** (1.33 → 1.35처럼 건너뛰기 거부)
-- 컨트롤 플레인 먼저. 노드가 절대 앞서지 않음
-- 파드 보호 규칙(PDB)을 강제로 뚫지 않음
-- 계획서 승인은 `승인`/`확인`/`시작` **이 단어만** 통과 ("진행해줘", "ㅇㅇ"는 승인 아님)
-- 예상 못 한 오류가 나면 → 멈추고 사람 판단을 기다림
-
-같이 들어 있는 `helm-k8s-compat`은 업그레이드 전에 Helm 차트가 새 버전과 맞는지 미리 확인해요.
+같이 들어 있는 `helm-k8s-compat`은 업그레이드 전에 Helm 차트가 새 버전과 맞는지 확인해요.
 
 > 무중단을 **보장**하진 않아요. 위험을 미리 찾아 줄 뿐이고, 최종 책임은 실행하는 사람에게 있어요.
 
----
-
 ### `verification-loop` · `github-ops` — ECC에서 가져온 것
 
-[affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT)에서 두 개만 골라 왔어요.
-
-이 둘은 **"여러 번 써 본 것"이 아니라는 점**이 다른 스킬과 달라요. 91개 대화 기록을 세어 보니
-ECC 스킬은 5주 동안 한 번도 안 쓰였거든요. 그래도 이 둘을 남긴 이유:
+[affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT)에서 두 개만 골랐어요. 다른 스킬과 달리 **여러 번 써 본 것이 아니에요.**
+91개 대화 기록에서 ECC 스킬은 5주 동안 한 번도 안 쓰였지만, 이 둘은 남겼어요.
 
 | 스킬 | 남긴 이유 |
 |---|---|
-| `verification-loop` | ECC 스킬 중 **유일하게 혼자서 돌아가요.** 나머지는 서로 엮여 있어서 하나만 떼면 반쪽이 돼요. 가져온 뒤 npm만 가정하던 부분을 **프로젝트가 실제로 쓰는 명령을 찾아 돌리도록** 고쳤어요 |
-| `github-ops` | 이슈·PR·CI 로그를 **믿지 않고 다루는** 부분이 있어요. "이전 지시 무시해" 같은 문장이나 `curl … \| sh`가 적힌 남의 PR을 그대로 실행하지 않게 막아 줘요 |
+| `verification-loop` | ECC 스킬 중 유일하게 혼자 돌아가요. npm만 가정하던 부분을 프로젝트가 실제로 쓰는 명령을 찾아 돌리도록 고쳤어요 |
+| `github-ops` | 이슈·PR·CI 로그를 신뢰하지 않고 다뤄요. "이전 지시 무시해"나 `curl … \| sh`가 적힌 남의 PR을 그대로 실행하지 않게 막아요 |
 
-안 가져온 것과 이유:
+안 가져온 것: `tdd-workflow`(커버리지 80%·TDD 강제가 `testing.md`와 충돌), `security-review`(`security.md`와 겹치고 Claude Code에 같은 이름 기능이 있음),
+`terminal-ops`(다른 스킬을 묶는 허브라 혼자 의미 없음), `knowledge-ops`(설치 안 된 메모리 서버 필요).
+바꾼 내용은 각 폴더의 `NOTICE.md`([`verification-loop`](skills/verification-loop/NOTICE.md), [`github-ops`](skills/github-ops/NOTICE.md)).
 
-| 스킬 | 이유 |
-|---|---|
-| `tdd-workflow` | 커버리지 80%·TDD 강제가 `testing.md`(복잡한 로직엔 확인 하나)와 충돌 |
-| `security-review` | `security.md`와 겹치고, Claude Code에 같은 이름 기능이 이미 있음 |
-| `terminal-ops` | 나머지 5개를 묶어 부르는 허브라 혼자서는 의미 없음 |
-| `knowledge-ops` | 설치 안 된 메모리 서버가 있어야 동작 |
+### 에이전트 셋
 
-**겹치는 게 많아지면 엉망이 돼서** 이렇게 걸렀어요.
-원본 저작권: Copyright (c) 2026 Affaan Mustafa (MIT). 바꾼 내용은 각 스킬 폴더의 `NOTICE.md`([`verification-loop`](skills/verification-loop/NOTICE.md), [`github-ops`](skills/github-ops/NOTICE.md))에 있어요.
+셋 다 일부러 파일을 고칠 권한이 없어요.
 
----
+**`shell-diagnose`** 는 긴 빌드 로그가 대화창을 채우는 걸 막아요. 돌려주는 건 원인 / 근거 1~3줄 / 고칠 방법 / 돌린 명령 목록뿐이고, 고치는 건 부른 쪽이 해요.
 
-### `leak-scan` · `shell-diagnose` · `diff-review` — 에이전트
+**`diff-review`** 는 다른 에이전트가 만든 변경을 commit 전에 봐요. 만든 쪽의 설명은 받지 않고 의도·완료 조건과 diff만 봐요.
+`find`가 후보를 최대 10개 내면 후보마다 새 `verify`가 반박을 시도해 `CONFIRMED`만 남겨요. 스타일·원래 있던 문제·린터가 잡을 것은 안 올려요.
 
-셋 다 **파일을 고칠 권한이 없어요.** 실수가 아니라 일부러 그렇게 만든 거예요.
+**`leak-scan`** 은 공개 전 검사관이에요.
 
-**`shell-diagnose`** 는 긴 빌드 로그나 에러 메시지가 내 대화창을 가득 채우는 걸 막아요.
-안에서 명령을 몇 개 돌리든 돌려주는 건 **원인 / 근거 1~3줄 / 고칠 방법 / 돌린 명령 목록**뿐이에요.
-고칠 줄 알아도 직접 안 고치고 방법만 알려 줘요. 고치는 건 부른 쪽이 해요.
+- 비밀값을 화면에 안 보여 줘요. 파일과 줄 번호만. 앞 6글자도 안 돼요.
+- 이미 공개된 저장소에서 찾았으면 경고가 아니라 사고예요. 지워도 이미 본 사람은 봤으니 rotate가 필수라고 알려 줘요.
+- `.env`는 실패, `.env.example`은 통과, `*.tfvars`는 내용 보고 판단처럼 헛경보를 구분해요.
 
-**`diff-review`** 는 다른 에이전트(또는 다른 세션)가 만든 변경을 commit 전에 봐요.
-만든 쪽의 설명은 일부러 안 받고, **원래 하려던 일(의도·완료 조건)과 diff만** 봐요.
-두 단계로 돌려요. `find`가 문제 후보를 최대 10개 내면, 후보마다 새 `verify`가 반박을 시도해서
-`CONFIRMED`만 남겨요. 스타일·원래 있던 문제·린터가 잡을 것은 안 올려요. 헛경보가 리뷰를 쓸모없게 만드니까요.
-
-**`leak-scan`** 은 공개 전 검사관이에요. 원칙 두 개:
-
-- **비밀값을 절대 화면에 안 보여 줘요.** 어느 파일 몇 번째 줄인지만 알려 줘요. 값을 보고서에 적으면
-  유출을 한 번 더 복사하는 셈이라, 앞 6글자도 안 돼요.
-- **이미 공개된 저장소에서 찾았으면 경고가 아니라 사고예요.** 파일을 지워도 이미 본 사람은 봤으니까,
-  그 값을 **새로 바꾸는 것(rotate)** 이 필수라고 알려 줘요.
-
-그리고 `.env`는 실패지만 `.env.example`은 통과, `*.tfvars`는 "내용 보고 판단"처럼
-**단순한 검사기가 내는 헛경보를 구분**해요.
-
-> `leak-scan`의 Category 2·3은 **일부러 비워 뒀어요.** 회사 도구 이름, 본인 이메일처럼 사람마다 다른 거라
-> `~/.config/leak-scan/patterns.md`에 따로 적어 두면 검사할 때 읽어요. 레포 밖 파일이라 공개되지 않아요.
-> 뭘 넣으면 되는지는 에이전트 파일의 Category 2·3 예시를 보세요.
-
----
-
-## 저장소 구조
-
-```
-seungdo-plugins/
-├── .claude-plugin/
-│   ├── plugin.json        # 이 저장소 = 플러그인 하나
-│   └── marketplace.json   # 앱스토어 목록 — 다른 저장소 스킬도 여기 등록
-├── skills/                # seungdo 플러그인의 스킬
-│   ├── seonbi/SKILL.md
-│   ├── seonbi-rca/SKILL.md
-│   ├── katalk/SKILL.md
-│   ├── grilling/          # SKILL.md + NOTICE.md (mattpocock/skills, MIT)
-│   ├── verification-loop/ # SKILL.md + NOTICE.md (ECC, MIT)
-│   └── github-ops/        # SKILL.md + NOTICE.md (ECC, MIT)
-├── agents/                # 플러그인이 자동으로 읽는 에이전트
-│   ├── leak-scan.md
-│   ├── shell-diagnose.md
-│   └── diff-review.md
-├── rules/                 # 플러그인이 아님 — 직접 복사
-│   ├── NOTICE.md          # simplicity.md 출처 (ponytail, MIT)
-│   └── common/
-│       ├── simplicity.md
-│       ├── coding-style.md
-│       ├── development-workflow.md
-│       ├── git-workflow.md
-│       ├── security.md
-│       └── testing.md
-└── README.md
-```
-
-설정 파일(매니페스트)을 고쳤다면 커밋 전에:
-
-```bash
-claude plugin validate . --strict
-claude plugin validate skills --strict
-claude plugin validate agents --strict
-```
+Category 2·3(회사 도구 이름, 본인 이메일 등)은 사람마다 달라 비워 뒀어요. `~/.config/leak-scan/patterns.md`에 적어 두면 검사할 때 읽어요(레포 밖이라 공개되지 않음). 형식은 [에이전트 파일](agents/leak-scan.md)의 Category 2·3 예시를 따르세요.
 
 ---
 
@@ -425,5 +256,5 @@ claude plugin validate agents --strict
 
 예외로 MIT인 것들 (원본 라이선스를 따름):
 
-- `skills/verification-loop/`, `skills/github-ops/` — [ECC](https://github.com/affaan-m/ECC)에서 가져옴. 고지: 각 폴더의 `NOTICE.md`
-- `rules/common/simplicity.md` — [ponytail](https://github.com/DietrichGebert/ponytail)에서 가져옴. 고지: [`rules/NOTICE.md`](rules/NOTICE.md)
+- `skills/verification-loop/`, `skills/github-ops/` — [ECC](https://github.com/affaan-m/ECC). 고지: 각 폴더의 `NOTICE.md`
+- `rules/common/simplicity.md` — [ponytail](https://github.com/DietrichGebert/ponytail). 고지: [`rules/NOTICE.md`](rules/NOTICE.md)
